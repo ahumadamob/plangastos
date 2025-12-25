@@ -73,16 +73,7 @@ import { Leftbar } from './layout/leftbar/leftbar';
           <app-leftbar />
         </aside>
         <section class="col">
-          <div class="card bg-light mb-3 w-100">
-            <div class="card-header">Panel principal</div>
-            <div class="card-body">
-              <h4 class="card-title">Bienvenido a {{ title() }}!</h4>
-              <p class="card-text mb-3">
-                Navega por las secciones para gestionar tus gastos e ingresos.
-              </p>
-              <router-outlet />
-            </div>
-          </div>
+          <router-outlet />
         </section>
       </div>
     </main>
