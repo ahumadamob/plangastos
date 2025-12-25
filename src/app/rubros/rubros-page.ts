@@ -109,7 +109,7 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
                   </span>
                 </td>
                 <td class="text-end">
-                  <button class="btn btn-danger btn-sm" type="button" (click)="remove(rubro)">
+                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(rubro)">
                     Eliminar
                   </button>
                 </td>
@@ -118,6 +118,29 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
           </table>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="deleteModalOpen()">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Eliminar rubro</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="closeDeleteModal()"></button>
+          </div>
+          <div class="modal-body">
+            <p *ngIf="rubroToDelete()">¿Seguro que deseas eliminar el rubro "{{ rubroToDelete()?.nombre }}"?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="loading()">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-backdrop fade show"></div>
     </div>
   `,
 })
@@ -129,6 +152,8 @@ export class RubrosPage implements OnInit {
   protected readonly statusMessage = signal('');
   protected readonly errorMessage = signal('');
   protected readonly displayForm = signal(false);
+  protected readonly deleteModalOpen = signal(false);
+  protected readonly rubroToDelete = signal<Rubro | null>(null);
 
   protected readonly form: FormGroup;
 
@@ -197,9 +222,21 @@ export class RubrosPage implements OnInit {
     });
   }
 
-  protected remove(rubro: Rubro): void {
-    const confirmed = window.confirm(`¿Seguro que deseas eliminar el rubro "${rubro.nombre}"?`);
-    if (!confirmed) {
+  protected openDeleteModal(rubro: Rubro): void {
+    this.rubroToDelete.set(rubro);
+    this.deleteModalOpen.set(true);
+    this.statusMessage.set('');
+    this.errorMessage.set('');
+  }
+
+  protected closeDeleteModal(): void {
+    this.deleteModalOpen.set(false);
+    this.rubroToDelete.set(null);
+  }
+
+  protected confirmDelete(): void {
+    const rubro = this.rubroToDelete();
+    if (!rubro) {
       return;
     }
 
@@ -216,7 +253,10 @@ export class RubrosPage implements OnInit {
         this.errorMessage.set('No se pudo eliminar el rubro.');
         this.loading.set(false);
       },
-      complete: () => this.loading.set(false),
+      complete: () => {
+        this.loading.set(false);
+        this.closeDeleteModal();
+      },
     });
   }
 
