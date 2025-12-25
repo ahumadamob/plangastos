@@ -73,7 +73,7 @@ import { Leftbar } from './layout/leftbar/leftbar';
           <app-leftbar />
         </aside>
         <section class="col">
-          <div class="card bg-light mb-3" style="max-width: 20rem;">
+          <div class="card bg-light mb-3 w-100">
             <div class="card-header">Panel principal</div>
             <div class="card-body">
               <h4 class="card-title">Bienvenido a {{ title() }}!</h4>
