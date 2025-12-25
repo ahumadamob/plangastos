@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Leftbar } from './layout/leftbar/leftbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Leftbar],
   template: `
     <header>
       <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -67,8 +68,15 @@ import { RouterOutlet } from '@angular/router';
     </header>
 
     <main class="container py-4">
-      <h1 class="mb-3">Bienvenido a {{ title() }}!</h1>
-      <router-outlet />
+      <div class="row">
+        <aside class="col-12 col-md-4 col-lg-3 mb-3 mb-md-0">
+          <app-leftbar />
+        </aside>
+        <section class="col">
+          <h1 class="mb-3">Bienvenido a {{ title() }}!</h1>
+          <router-outlet />
+        </section>
+      </div>
     </main>
   `,
   styles: [],
