@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Leftbar } from './layout/leftbar/leftbar';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Leftbar],
   template: `
     <header>
       <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
@@ -66,9 +67,24 @@ import { RouterOutlet } from '@angular/router';
       </nav>
     </header>
 
-    <main class="container py-4">
-      <h1 class="mb-3">Bienvenido a {{ title() }}!</h1>
-      <router-outlet />
+    <main class="container-fluid py-4">
+      <div class="row">
+        <aside class="col-12 col-md-4 col-lg-3 mb-3 mb-md-0">
+          <app-leftbar />
+        </aside>
+        <section class="col">
+          <div class="card bg-light mb-3 w-100">
+            <div class="card-header">Panel principal</div>
+            <div class="card-body">
+              <h4 class="card-title">Bienvenido a {{ title() }}!</h4>
+              <p class="card-text mb-3">
+                Navega por las secciones para gestionar tus gastos e ingresos.
+              </p>
+              <router-outlet />
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   `,
   styles: [],
