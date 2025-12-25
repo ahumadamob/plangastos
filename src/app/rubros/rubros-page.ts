@@ -109,7 +109,7 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
                   </span>
                 </td>
                 <td class="text-end">
-                  <button class="btn btn-sm btn-outline-danger" type="button" (click)="remove(rubro)">
+                  <button class="btn btn-danger btn-sm" type="button" (click)="remove(rubro)">
                     Eliminar
                   </button>
                 </td>
