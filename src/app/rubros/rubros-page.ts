@@ -120,7 +120,13 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
       </div>
     </div>
 
-    <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="deleteModalOpen()">
+    <div
+      class="modal fade show d-block"
+      tabindex="-1"
+      role="dialog"
+      *ngIf="deleteModalOpen()"
+      style="background-color: rgba(0, 0, 0, 0.5);"
+    >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -140,7 +146,6 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
           </div>
         </div>
       </div>
-      <div class="modal-backdrop fade show"></div>
     </div>
   `,
 })
