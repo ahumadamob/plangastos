@@ -15,9 +15,6 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Periodos</span>
-        <button class="btn btn-outline-primary btn-sm" type="button" (click)="loadDropdown()" [disabled]="loadingDropdown()">
-          Recargar
-        </button>
       </div>
       <div class="card-body">
         <div *ngIf="loadingDropdown()" class="alert alert-info">Cargando periodos...</div>
@@ -44,13 +41,13 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               <div class="card text-white bg-success h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Ingresos</div>
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong>{{ getTotal(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</strong>
                   </div>
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong>{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</strong>
                   </div>
                 </div>
               </div>
@@ -59,13 +56,13 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               <div class="card text-white bg-danger h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Gastos</div>
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong>{{ getTotal(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</strong>
                   </div>
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong>{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</strong>
                   </div>
                 </div>
               </div>
@@ -74,13 +71,13 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               <div class="card bg-light h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Ahorro</div>
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong>{{ getTotal(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</strong>
                   </div>
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong>{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</strong>
                   </div>
                 </div>
               </div>
@@ -89,13 +86,13 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               <div class="card text-white bg-info h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Total</div>
                 <div class="card-body">
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong>{{ getSaldoComprometido() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.2-2' }}</strong>
                   </div>
-                  <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong>{{ getSaldoReal() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.2-2' }}</strong>
                   </div>
                 </div>
               </div>
@@ -120,20 +117,21 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                     </thead>
                     <tbody>
                       <ng-container *ngFor="let item of ingresos()">
-                        <tr>
+                        <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-primary btn-sm"
+                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Registrar nueva transacción"
+                              aria-label="Consolidar gasto"
+                              title="Consolidar gasto"
                             >
-                              <span aria-hidden="true">+</span>
+                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
                           </td>
                         </tr>
@@ -278,20 +276,21 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                     </thead>
                     <tbody>
                       <ng-container *ngFor="let item of gastos()">
-                        <tr>
+                        <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-primary btn-sm"
+                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Registrar nueva transacción"
+                              aria-label="Consolidar gasto"
+                              title="Consolidar gasto"
                             >
-                              <span aria-hidden="true">+</span>
+                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
                           </td>
                         </tr>
@@ -436,20 +435,21 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                     </thead>
                     <tbody>
                       <ng-container *ngFor="let item of ahorro()">
-                        <tr>
+                        <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-primary btn-sm"
+                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Registrar nueva transacción"
+                              aria-label="Consolidar gasto"
+                              title="Consolidar gasto"
                             >
-                              <span aria-hidden="true">+</span>
+                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
                           </td>
                         </tr>
@@ -581,6 +581,23 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
       </div>
     </div>
   `,
+  styles: [
+    `
+      .consolidate-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .consolidate-icon {
+        font-size: 1rem;
+        line-height: 1;
+      }
+    `,
+  ],
 })
 export class PeriodosPage implements OnInit {
   protected readonly dropdown = signal<PresupuestoDropdown[]>([]);
@@ -697,6 +714,16 @@ export class PeriodosPage implements OnInit {
       this.getTotalTransacciones(this.ahorro())
     );
   }
+
+  protected getRowClasses(partida: PartidaPlanificada): Record<string, boolean> {
+    const status = this.getRowStatus(partida);
+    return {
+      'table-success': status === 'success',
+      'table-danger': status === 'danger',
+      'table-warning': status === 'warning',
+    };
+  }
+
   protected toggleNewTransactionForm(partida: PartidaPlanificada): void {
     if (this.inlineFormPartidaId() === partida.id) {
       this.closeInlineForm();
@@ -791,5 +818,65 @@ export class PeriodosPage implements OnInit {
 
   private getTodayDateString(): string {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  private getRowStatus(partida: PartidaPlanificada): 'success' | 'danger' | 'warning' | null {
+    if (this.isEightyPercentOrMore(partida)) {
+      return 'success';
+    }
+
+    if (this.hasTransacciones(partida)) {
+      return null;
+    }
+
+    const fechaObjetivo = this.getFechaObjetivoDate(partida.fechaObjetivo);
+    if (!fechaObjetivo) {
+      return null;
+    }
+
+    const today = this.getTodayAtMidnight();
+    if (fechaObjetivo <= today) {
+      return 'danger';
+    }
+
+    const tenDaysAhead = new Date(today);
+    tenDaysAhead.setDate(today.getDate() + 10);
+    if (fechaObjetivo > today && fechaObjetivo <= tenDaysAhead) {
+      return 'warning';
+    }
+
+    return null;
+  }
+
+  private isEightyPercentOrMore(partida: PartidaPlanificada): boolean {
+    const comprometido = partida.montoComprometido ?? 0;
+    if (comprometido <= 0) {
+      return false;
+    }
+
+    const transacciones = this.getTransaccionesSum(partida);
+    return transacciones / comprometido >= 0.8;
+  }
+
+  private hasTransacciones(partida: PartidaPlanificada): boolean {
+    return (partida.transacciones?.length ?? 0) > 0;
+  }
+
+  private getFechaObjetivoDate(fechaObjetivo?: string | null): Date | null {
+    if (!fechaObjetivo) {
+      return null;
+    }
+
+    const parsed = new Date(fechaObjetivo);
+    if (Number.isNaN(parsed.getTime())) {
+      return null;
+    }
+
+    return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  }
+
+  private getTodayAtMidnight(): Date {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
   }
 }
