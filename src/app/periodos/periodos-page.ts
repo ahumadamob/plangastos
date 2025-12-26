@@ -219,17 +219,6 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                                       Selecciona la cuenta financiera.
                                     </div>
                                   </div>
-                                  <div class="col-12 col-md-6">
-                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                    <input
-                                      class="form-control"
-                                      [id]="'referencia-' + item.id"
-                                      type="text"
-                                      formControlName="referenciaExterna"
-                                      maxlength="150"
-                                      autocomplete="off"
-                                    />
-                                  </div>
                                   <div class="col-12 d-flex gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
                                       Guardar transacción
@@ -387,17 +376,6 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                                     <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
                                       Selecciona la cuenta financiera.
                                     </div>
-                                  </div>
-                                  <div class="col-12 col-md-6">
-                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                    <input
-                                      class="form-control"
-                                      [id]="'referencia-' + item.id"
-                                      type="text"
-                                      formControlName="referenciaExterna"
-                                      maxlength="150"
-                                      autocomplete="off"
-                                    />
                                   </div>
                                   <div class="col-12 d-flex gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
@@ -557,17 +535,6 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                                       Selecciona la cuenta financiera.
                                     </div>
                                   </div>
-                                  <div class="col-12 col-md-6">
-                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                    <input
-                                      class="form-control"
-                                      [id]="'referencia-' + item.id"
-                                      type="text"
-                                      formControlName="referenciaExterna"
-                                      maxlength="150"
-                                      autocomplete="off"
-                                    />
-                                  </div>
                                   <div class="col-12 d-flex gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
                                       Guardar transacción
@@ -647,7 +614,6 @@ export class PeriodosPage implements OnInit {
       }),
       fecha: this.fb.control<string | null>(null, { validators: [Validators.required] }),
       monto: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
-      referenciaExterna: this.fb.control<string | null>(null),
       partidaPlanificada_id: this.fb.control<number | null>(null),
     });
   }
@@ -792,14 +758,16 @@ export class PeriodosPage implements OnInit {
   }
 
   private prepareInlineForm(partida: PartidaPlanificada | null): void {
+    const today = this.getTodayDateString();
+    const montoPredeterminado = partida ? this.getSaldoPartida(partida) : null;
+
     this.newTransactionForm.reset({
       presupuesto_id: partida?.presupuesto?.id ?? this.selectedPresupuestoId(),
       rubro_id: partida?.rubro?.id ?? null,
       cuentaFinanciera_id: null,
       descripcion: '',
-      fecha: null,
-      monto: null,
-      referenciaExterna: null,
+      fecha: today,
+      monto: montoPredeterminado,
       partidaPlanificada_id: partida?.id ?? null,
     });
   }
@@ -810,5 +778,13 @@ export class PeriodosPage implements OnInit {
     }
 
     return [...this.ingresos(), ...this.gastos(), ...this.ahorro()].find((partida) => partida.id === id);
+  }
+
+  private getSaldoPartida(partida: PartidaPlanificada): number {
+    return (partida.montoComprometido ?? 0) - this.getTransaccionesSum(partida);
+  }
+
+  private getTodayDateString(): string {
+    return new Date().toISOString().slice(0, 10);
   }
 }
