@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PartidaPlanificada, PartidaPlanificadaService } from '../partidas-planificadas/partida-planificada.service';
 import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupuesto.service';
@@ -112,6 +113,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -121,6 +123,16 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                         <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
+                        <td class="text-end">
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            (click)="openNewTransactionForm(item)"
+                            aria-label="Registrar nueva transacción"
+                          >
+                            <span aria-hidden="true">+</span>
+                          </button>
+                        </td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -128,6 +140,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -148,6 +161,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -157,6 +171,16 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                         <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
+                        <td class="text-end">
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            (click)="openNewTransactionForm(item)"
+                            aria-label="Registrar nueva transacción"
+                          >
+                            <span aria-hidden="true">+</span>
+                          </button>
+                        </td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -164,6 +188,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -184,6 +209,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -193,6 +219,16 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                         <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
+                        <td class="text-end">
+                          <button
+                            type="button"
+                            class="btn btn-primary btn-sm"
+                            (click)="openNewTransactionForm(item)"
+                            aria-label="Registrar nueva transacción"
+                          >
+                            <span aria-hidden="true">+</span>
+                          </button>
+                        </td>
                       </tr>
                     </tbody>
                     <tfoot>
@@ -200,6 +236,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -225,7 +262,8 @@ export class PeriodosPage implements OnInit {
 
   constructor(
     private readonly presupuestoService: PresupuestoService,
-    private readonly partidaPlanificadaService: PartidaPlanificadaService
+    private readonly partidaPlanificadaService: PartidaPlanificadaService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
@@ -305,5 +343,16 @@ export class PeriodosPage implements OnInit {
       this.getTotalTransacciones(this.gastos()) -
       this.getTotalTransacciones(this.ahorro())
     );
+  }
+
+  protected openNewTransactionForm(partida: PartidaPlanificada): void {
+    this.router.navigate(['/transacciones'], {
+      queryParams: {
+        nueva: true,
+        partidaId: partida.id,
+        presupuestoId: partida.presupuesto?.id ?? null,
+        rubroId: partida.rubro?.id ?? null,
+      },
+    });
   }
 }
