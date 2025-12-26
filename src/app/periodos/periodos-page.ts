@@ -15,9 +15,6 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Periodos</span>
-        <button class="btn btn-outline-primary btn-sm" type="button" (click)="loadDropdown()" [disabled]="loadingDropdown()">
-          Recargar
-        </button>
       </div>
       <div class="card-body">
         <div *ngIf="loadingDropdown()" class="alert alert-info">Cargando periodos...</div>
