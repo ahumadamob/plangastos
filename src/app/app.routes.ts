@@ -5,12 +5,17 @@ import { PlanPresupuestarioPage } from './plan-presupuestario/plan-presupuestari
 import { PresupuestosPage } from './presupuestos/presupuestos-page';
 import { RubrosPage } from './rubros/rubros-page';
 import { TransaccionesPage } from './transacciones/transacciones-page';
+import { PeriodosPage } from './periodos/periodos-page';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'rubros',
+    redirectTo: 'periodos',
     pathMatch: 'full',
+  },
+  {
+    path: 'periodos',
+    component: PeriodosPage,
   },
   {
     path: 'rubros',
