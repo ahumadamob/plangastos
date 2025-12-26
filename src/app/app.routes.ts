@@ -4,6 +4,7 @@ import { PartidasPlanificadasPage } from './partidas-planificadas/partidas-plani
 import { PlanPresupuestarioPage } from './plan-presupuestario/plan-presupuestario-page';
 import { PresupuestosPage } from './presupuestos/presupuestos-page';
 import { RubrosPage } from './rubros/rubros-page';
+import { TransaccionesPage } from './transacciones/transacciones-page';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,10 @@ export const routes: Routes = [
   {
     path: 'rubros',
     component: RubrosPage,
+  },
+  {
+    path: 'transacciones',
+    component: TransaccionesPage,
   },
   {
     path: 'presupuestos',
