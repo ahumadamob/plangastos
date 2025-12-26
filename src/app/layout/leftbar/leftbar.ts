@@ -15,6 +15,14 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       >
         Rubros
       </a>
+      <a
+        class="list-group-item list-group-item-action"
+        routerLink="/cuentas-financieras"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Cuentas financieras
+      </a>
     </div>
   `,
   styles: [],
