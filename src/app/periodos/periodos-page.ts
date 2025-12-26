@@ -721,6 +721,7 @@ export class PeriodosPage implements OnInit {
   protected getRowClasses(partida: PartidaPlanificada): Record<string, boolean> {
     const status = this.getRowStatus(partida);
     return {
+      'table-success': status === 'success',
       'table-danger': status === 'danger',
       'table-warning': status === 'warning',
     };
@@ -822,7 +823,11 @@ export class PeriodosPage implements OnInit {
     return new Date().toISOString().slice(0, 10);
   }
 
-  private getRowStatus(partida: PartidaPlanificada): 'danger' | 'warning' | null {
+  private getRowStatus(partida: PartidaPlanificada): 'success' | 'danger' | 'warning' | null {
+    if (this.isEightyPercentOrMore(partida)) {
+      return 'success';
+    }
+
     if (this.hasTransacciones(partida)) {
       return null;
     }
@@ -844,6 +849,16 @@ export class PeriodosPage implements OnInit {
     }
 
     return null;
+  }
+
+  private isEightyPercentOrMore(partida: PartidaPlanificada): boolean {
+    const comprometido = partida.montoComprometido ?? 0;
+    if (comprometido <= 0) {
+      return false;
+    }
+
+    const transacciones = this.getTransaccionesSum(partida);
+    return transacciones / comprometido >= 0.8;
   }
 
   private hasTransacciones(partida: PartidaPlanificada): boolean {
