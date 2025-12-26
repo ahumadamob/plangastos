@@ -733,8 +733,13 @@ export class PeriodosPage implements OnInit {
     this.inlineErrorMessage.set('');
 
     this.transaccionService.create(payload).subscribe({
-      next: () => {
-        this.inlineStatusMessage.set('Transacción creada correctamente.');
+      next: (response) => {
+        if (!response.success) {
+          this.inlineErrorMessage.set(response.message || 'No se pudo crear la transacción.');
+          return;
+        }
+
+        this.inlineStatusMessage.set(response.message || 'Transacción creada correctamente.');
         const partida = this.getPartidaById(this.inlineFormPartidaId());
         if (partida) {
           this.prepareInlineForm(partida);
