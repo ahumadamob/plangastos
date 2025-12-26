@@ -119,142 +119,144 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of ingresos()">
-                        <td>{{ item.descripcion }}</td>
-                        <td>{{ item.rubro.nombre }}</td>
-                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                        <td>{{ item.fechaObjetivo || '—' }}</td>
-                        <td class="text-end">
-                          <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            (click)="toggleNewTransactionForm(item)"
-                            aria-label="Registrar nueva transacción"
-                          >
-                            <span aria-hidden="true">+</span>
-                          </button>
-                        </td>
-                      </tr>
-                      <tr *ngIf="inlineFormPartidaId() === item.id">
-                        <td colspan="6">
-                          <div class="border rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                              <div>
-                                <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
-                                <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                      <ng-container *ngFor="let item of ingresos()">
+                        <tr>
+                          <td>{{ item.descripcion }}</td>
+                          <td>{{ item.rubro.nombre }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-primary btn-sm"
+                              (click)="toggleNewTransactionForm(item)"
+                              aria-label="Registrar nueva transacción"
+                            >
+                              <span aria-hidden="true">+</span>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="inlineFormPartidaId() === item.id">
+                          <td colspan="6">
+                            <div class="border rounded p-3">
+                              <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                  <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
+                                  <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                                </div>
+                                <button
+                                  type="button"
+                                  class="btn btn-outline-secondary btn-sm"
+                                  (click)="closeInlineForm()"
+                                  [disabled]="savingTransaction()"
+                                >
+                                  Cerrar
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                class="btn btn-outline-secondary btn-sm"
-                                (click)="closeInlineForm()"
-                                [disabled]="savingTransaction()"
-                              >
-                                Cerrar
-                              </button>
+                              <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
+                                <div class="row g-2">
+                                  <div class="col-12 col-md-4">
+                                    <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'descripcion-' + item.id"
+                                      type="text"
+                                      formControlName="descripcion"
+                                      [class.is-invalid]="isInvalid('descripcion')"
+                                      autocomplete="off"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
+                                      Ingresa una descripción (mínimo 3 caracteres).
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'fecha-' + item.id"
+                                      type="date"
+                                      formControlName="fecha"
+                                      [class.is-invalid]="isInvalid('fecha')"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
+                                      Selecciona la fecha.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="monto-{{ item.id }}" class="form-label">Monto</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'monto-' + item.id"
+                                      type="number"
+                                      formControlName="monto"
+                                      [class.is-invalid]="isInvalid('monto')"
+                                      step="0.01"
+                                      min="0"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('monto')">
+                                      Ingresa un monto válido.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                    <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
+                                    <select
+                                      class="form-select"
+                                      [id]="'cuenta-' + item.id"
+                                      formControlName="cuentaFinanciera_id"
+                                      [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
+                                      required
+                                    >
+                                      <option [ngValue]="null" disabled>Selecciona una cuenta</option>
+                                      <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
+                                        {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
+                                      </option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
+                                      Selecciona la cuenta financiera.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-6">
+                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'referencia-' + item.id"
+                                      type="text"
+                                      formControlName="referenciaExterna"
+                                      maxlength="150"
+                                      autocomplete="off"
+                                    />
+                                  </div>
+                                  <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
+                                      Guardar transacción
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="btn btn-outline-secondary btn-sm"
+                                      (click)="closeInlineForm()"
+                                      [disabled]="savingTransaction()"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                  <div class="col-12">
+                                    <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
+                                      {{ inlineStatusMessage() }}
+                                    </div>
+                                    <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
+                                      {{ inlineErrorMessage() }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
                             </div>
-                            <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
-                              <div class="row g-2">
-                                <div class="col-12 col-md-4">
-                                  <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'descripcion-' + item.id"
-                                    type="text"
-                                    formControlName="descripcion"
-                                    [class.is-invalid]="isInvalid('descripcion')"
-                                    autocomplete="off"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
-                                    Ingresa una descripción (mínimo 3 caracteres).
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'fecha-' + item.id"
-                                    type="date"
-                                    formControlName="fecha"
-                                    [class.is-invalid]="isInvalid('fecha')"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
-                                    Selecciona la fecha.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="monto-{{ item.id }}" class="form-label">Monto</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'monto-' + item.id"
-                                    type="number"
-                                    formControlName="monto"
-                                    [class.is-invalid]="isInvalid('monto')"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('monto')">
-                                    Ingresa un monto válido.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                  <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
-                                  <select
-                                    class="form-select"
-                                    [id]="'cuenta-' + item.id"
-                                    formControlName="cuentaFinanciera_id"
-                                    [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
-                                    required
-                                  >
-                                    <option [ngValue]="null" disabled>Selecciona una cuenta</option>
-                                    <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
-                                      {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
-                                    </option>
-                                  </select>
-                                  <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
-                                    Selecciona la cuenta financiera.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                  <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'referencia-' + item.id"
-                                    type="text"
-                                    formControlName="referenciaExterna"
-                                    maxlength="150"
-                                    autocomplete="off"
-                                  />
-                                </div>
-                                <div class="col-12 d-flex gap-2">
-                                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
-                                    Guardar transacción
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-sm"
-                                    (click)="closeInlineForm()"
-                                    [disabled]="savingTransaction()"
-                                  >
-                                    Cancelar
-                                  </button>
-                                </div>
-                                <div class="col-12">
-                                  <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
-                                    {{ inlineStatusMessage() }}
-                                  </div>
-                                  <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
-                                    {{ inlineErrorMessage() }}
-                                  </div>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                      </ng-container>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -286,142 +288,144 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of gastos()">
-                        <td>{{ item.descripcion }}</td>
-                        <td>{{ item.rubro.nombre }}</td>
-                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                        <td>{{ item.fechaObjetivo || '—' }}</td>
-                        <td class="text-end">
-                          <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            (click)="toggleNewTransactionForm(item)"
-                            aria-label="Registrar nueva transacción"
-                          >
-                            <span aria-hidden="true">+</span>
-                          </button>
-                        </td>
-                      </tr>
-                      <tr *ngIf="inlineFormPartidaId() === item.id">
-                        <td colspan="6">
-                          <div class="border rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                              <div>
-                                <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
-                                <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                      <ng-container *ngFor="let item of gastos()">
+                        <tr>
+                          <td>{{ item.descripcion }}</td>
+                          <td>{{ item.rubro.nombre }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-primary btn-sm"
+                              (click)="toggleNewTransactionForm(item)"
+                              aria-label="Registrar nueva transacción"
+                            >
+                              <span aria-hidden="true">+</span>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="inlineFormPartidaId() === item.id">
+                          <td colspan="6">
+                            <div class="border rounded p-3">
+                              <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                  <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
+                                  <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                                </div>
+                                <button
+                                  type="button"
+                                  class="btn btn-outline-secondary btn-sm"
+                                  (click)="closeInlineForm()"
+                                  [disabled]="savingTransaction()"
+                                >
+                                  Cerrar
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                class="btn btn-outline-secondary btn-sm"
-                                (click)="closeInlineForm()"
-                                [disabled]="savingTransaction()"
-                              >
-                                Cerrar
-                              </button>
+                              <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
+                                <div class="row g-2">
+                                  <div class="col-12 col-md-4">
+                                    <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'descripcion-' + item.id"
+                                      type="text"
+                                      formControlName="descripcion"
+                                      [class.is-invalid]="isInvalid('descripcion')"
+                                      autocomplete="off"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
+                                      Ingresa una descripción (mínimo 3 caracteres).
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'fecha-' + item.id"
+                                      type="date"
+                                      formControlName="fecha"
+                                      [class.is-invalid]="isInvalid('fecha')"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
+                                      Selecciona la fecha.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="monto-{{ item.id }}" class="form-label">Monto</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'monto-' + item.id"
+                                      type="number"
+                                      formControlName="monto"
+                                      [class.is-invalid]="isInvalid('monto')"
+                                      step="0.01"
+                                      min="0"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('monto')">
+                                      Ingresa un monto válido.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                    <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
+                                    <select
+                                      class="form-select"
+                                      [id]="'cuenta-' + item.id"
+                                      formControlName="cuentaFinanciera_id"
+                                      [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
+                                      required
+                                    >
+                                      <option [ngValue]="null" disabled>Selecciona una cuenta</option>
+                                      <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
+                                        {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
+                                      </option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
+                                      Selecciona la cuenta financiera.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-6">
+                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'referencia-' + item.id"
+                                      type="text"
+                                      formControlName="referenciaExterna"
+                                      maxlength="150"
+                                      autocomplete="off"
+                                    />
+                                  </div>
+                                  <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
+                                      Guardar transacción
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="btn btn-outline-secondary btn-sm"
+                                      (click)="closeInlineForm()"
+                                      [disabled]="savingTransaction()"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                  <div class="col-12">
+                                    <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
+                                      {{ inlineStatusMessage() }}
+                                    </div>
+                                    <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
+                                      {{ inlineErrorMessage() }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
                             </div>
-                            <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
-                              <div class="row g-2">
-                                <div class="col-12 col-md-4">
-                                  <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'descripcion-' + item.id"
-                                    type="text"
-                                    formControlName="descripcion"
-                                    [class.is-invalid]="isInvalid('descripcion')"
-                                    autocomplete="off"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
-                                    Ingresa una descripción (mínimo 3 caracteres).
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'fecha-' + item.id"
-                                    type="date"
-                                    formControlName="fecha"
-                                    [class.is-invalid]="isInvalid('fecha')"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
-                                    Selecciona la fecha.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="monto-{{ item.id }}" class="form-label">Monto</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'monto-' + item.id"
-                                    type="number"
-                                    formControlName="monto"
-                                    [class.is-invalid]="isInvalid('monto')"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('monto')">
-                                    Ingresa un monto válido.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                  <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
-                                  <select
-                                    class="form-select"
-                                    [id]="'cuenta-' + item.id"
-                                    formControlName="cuentaFinanciera_id"
-                                    [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
-                                    required
-                                  >
-                                    <option [ngValue]="null" disabled>Selecciona una cuenta</option>
-                                    <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
-                                      {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
-                                    </option>
-                                  </select>
-                                  <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
-                                    Selecciona la cuenta financiera.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                  <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'referencia-' + item.id"
-                                    type="text"
-                                    formControlName="referenciaExterna"
-                                    maxlength="150"
-                                    autocomplete="off"
-                                  />
-                                </div>
-                                <div class="col-12 d-flex gap-2">
-                                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
-                                    Guardar transacción
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-sm"
-                                    (click)="closeInlineForm()"
-                                    [disabled]="savingTransaction()"
-                                  >
-                                    Cancelar
-                                  </button>
-                                </div>
-                                <div class="col-12">
-                                  <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
-                                    {{ inlineStatusMessage() }}
-                                  </div>
-                                  <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
-                                    {{ inlineErrorMessage() }}
-                                  </div>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                      </ng-container>
                     </tbody>
                     <tfoot>
                       <tr>
@@ -453,142 +457,144 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                       </tr>
                     </thead>
                     <tbody>
-                      <tr *ngFor="let item of ahorro()">
-                        <td>{{ item.descripcion }}</td>
-                        <td>{{ item.rubro.nombre }}</td>
-                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
-                        <td>{{ item.fechaObjetivo || '—' }}</td>
-                        <td class="text-end">
-                          <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            (click)="toggleNewTransactionForm(item)"
-                            aria-label="Registrar nueva transacción"
-                          >
-                            <span aria-hidden="true">+</span>
-                          </button>
-                        </td>
-                      </tr>
-                      <tr *ngIf="inlineFormPartidaId() === item.id">
-                        <td colspan="6">
-                          <div class="border rounded p-3">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                              <div>
-                                <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
-                                <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                      <ng-container *ngFor="let item of ahorro()">
+                        <tr>
+                          <td>{{ item.descripcion }}</td>
+                          <td>{{ item.rubro.nombre }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td>{{ item.fechaObjetivo || '—' }}</td>
+                          <td class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-primary btn-sm"
+                              (click)="toggleNewTransactionForm(item)"
+                              aria-label="Registrar nueva transacción"
+                            >
+                              <span aria-hidden="true">+</span>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="inlineFormPartidaId() === item.id">
+                          <td colspan="6">
+                            <div class="border rounded p-3">
+                              <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                  <div class="fw-bold">Nueva transacción para: {{ item.descripcion }}</div>
+                                  <div class="text-muted small">Rubro: {{ item.rubro.nombre }}</div>
+                                </div>
+                                <button
+                                  type="button"
+                                  class="btn btn-outline-secondary btn-sm"
+                                  (click)="closeInlineForm()"
+                                  [disabled]="savingTransaction()"
+                                >
+                                  Cerrar
+                                </button>
                               </div>
-                              <button
-                                type="button"
-                                class="btn btn-outline-secondary btn-sm"
-                                (click)="closeInlineForm()"
-                                [disabled]="savingTransaction()"
-                              >
-                                Cerrar
-                              </button>
+                              <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
+                                <div class="row g-2">
+                                  <div class="col-12 col-md-4">
+                                    <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'descripcion-' + item.id"
+                                      type="text"
+                                      formControlName="descripcion"
+                                      [class.is-invalid]="isInvalid('descripcion')"
+                                      autocomplete="off"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
+                                      Ingresa una descripción (mínimo 3 caracteres).
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'fecha-' + item.id"
+                                      type="date"
+                                      formControlName="fecha"
+                                      [class.is-invalid]="isInvalid('fecha')"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
+                                      Selecciona la fecha.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-2">
+                                    <label for="monto-{{ item.id }}" class="form-label">Monto</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'monto-' + item.id"
+                                      type="number"
+                                      formControlName="monto"
+                                      [class.is-invalid]="isInvalid('monto')"
+                                      step="0.01"
+                                      min="0"
+                                      required
+                                    />
+                                    <div class="invalid-feedback" *ngIf="isInvalid('monto')">
+                                      Ingresa un monto válido.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-4">
+                                    <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
+                                    <select
+                                      class="form-select"
+                                      [id]="'cuenta-' + item.id"
+                                      formControlName="cuentaFinanciera_id"
+                                      [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
+                                      required
+                                    >
+                                      <option [ngValue]="null" disabled>Selecciona una cuenta</option>
+                                      <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
+                                        {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
+                                      </option>
+                                    </select>
+                                    <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
+                                      Selecciona la cuenta financiera.
+                                    </div>
+                                  </div>
+                                  <div class="col-12 col-md-6">
+                                    <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
+                                    <input
+                                      class="form-control"
+                                      [id]="'referencia-' + item.id"
+                                      type="text"
+                                      formControlName="referenciaExterna"
+                                      maxlength="150"
+                                      autocomplete="off"
+                                    />
+                                  </div>
+                                  <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
+                                      Guardar transacción
+                                    </button>
+                                    <button
+                                      type="button"
+                                      class="btn btn-outline-secondary btn-sm"
+                                      (click)="closeInlineForm()"
+                                      [disabled]="savingTransaction()"
+                                    >
+                                      Cancelar
+                                    </button>
+                                  </div>
+                                  <div class="col-12">
+                                    <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
+                                      {{ inlineStatusMessage() }}
+                                    </div>
+                                    <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
+                                      {{ inlineErrorMessage() }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
                             </div>
-                            <form [formGroup]="newTransactionForm" (ngSubmit)="submitNewTransaction()">
-                              <div class="row g-2">
-                                <div class="col-12 col-md-4">
-                                  <label for="descripcion-{{ item.id }}" class="form-label">Descripción</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'descripcion-' + item.id"
-                                    type="text"
-                                    formControlName="descripcion"
-                                    [class.is-invalid]="isInvalid('descripcion')"
-                                    autocomplete="off"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
-                                    Ingresa una descripción (mínimo 3 caracteres).
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="fecha-{{ item.id }}" class="form-label">Fecha</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'fecha-' + item.id"
-                                    type="date"
-                                    formControlName="fecha"
-                                    [class.is-invalid]="isInvalid('fecha')"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('fecha')">
-                                    Selecciona la fecha.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-2">
-                                  <label for="monto-{{ item.id }}" class="form-label">Monto</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'monto-' + item.id"
-                                    type="number"
-                                    formControlName="monto"
-                                    [class.is-invalid]="isInvalid('monto')"
-                                    step="0.01"
-                                    min="0"
-                                    required
-                                  />
-                                  <div class="invalid-feedback" *ngIf="isInvalid('monto')">
-                                    Ingresa un monto válido.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-4">
-                                  <label for="cuenta-{{ item.id }}" class="form-label">Cuenta financiera</label>
-                                  <select
-                                    class="form-select"
-                                    [id]="'cuenta-' + item.id"
-                                    formControlName="cuentaFinanciera_id"
-                                    [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
-                                    required
-                                  >
-                                    <option [ngValue]="null" disabled>Selecciona una cuenta</option>
-                                    <option *ngFor="let cuenta of cuentasFinancieras()" [ngValue]="cuenta.id">
-                                      {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
-                                    </option>
-                                  </select>
-                                  <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
-                                    Selecciona la cuenta financiera.
-                                  </div>
-                                </div>
-                                <div class="col-12 col-md-6">
-                                  <label for="referencia-{{ item.id }}" class="form-label">Referencia externa</label>
-                                  <input
-                                    class="form-control"
-                                    [id]="'referencia-' + item.id"
-                                    type="text"
-                                    formControlName="referenciaExterna"
-                                    maxlength="150"
-                                    autocomplete="off"
-                                  />
-                                </div>
-                                <div class="col-12 d-flex gap-2">
-                                  <button type="submit" class="btn btn-primary btn-sm" [disabled]="savingTransaction()">
-                                    Guardar transacción
-                                  </button>
-                                  <button
-                                    type="button"
-                                    class="btn btn-outline-secondary btn-sm"
-                                    (click)="closeInlineForm()"
-                                    [disabled]="savingTransaction()"
-                                  >
-                                    Cancelar
-                                  </button>
-                                </div>
-                                <div class="col-12">
-                                  <div *ngIf="inlineStatusMessage()" class="alert alert-success mb-0">
-                                    {{ inlineStatusMessage() }}
-                                  </div>
-                                  <div *ngIf="inlineErrorMessage()" class="alert alert-danger mb-0">
-                                    {{ inlineErrorMessage() }}
-                                  </div>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
+                          </td>
+                        </tr>
+                      </ng-container>
                     </tbody>
                     <tfoot>
                       <tr>
