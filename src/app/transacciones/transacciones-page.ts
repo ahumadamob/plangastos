@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Params } from '@angular/router';
 import {
   TransaccionService,
   Transaccion,
@@ -266,7 +267,8 @@ export class TransaccionesPage implements OnInit {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly transaccionService: TransaccionService
+    private readonly transaccionService: TransaccionService,
+    private readonly route: ActivatedRoute
   ) {
     this.form = this.fb.group({
       presupuesto_id: this.fb.control<number | null>(null, { validators: [Validators.required] }),
@@ -291,6 +293,7 @@ export class TransaccionesPage implements OnInit {
     this.loadCuentasFinancieras();
     this.loadPartidasPlanificadas();
     this.loadTransacciones();
+    this.route.queryParams.subscribe((params) => this.applyQueryParams(params));
   }
 
   protected showNewForm(): void {
@@ -458,5 +461,28 @@ export class TransaccionesPage implements OnInit {
       next: (response) => this.partidasPlanificadas.set(response.data ?? []),
       error: () => this.errorMessage.set('No se pudieron obtener las partidas planificadas.'),
     });
+  }
+
+  private applyQueryParams(params: Params): void {
+    if (!('nueva' in params)) {
+      return;
+    }
+
+    this.showNewForm();
+
+    const presupuestoId = this.parseParamNumber(params['presupuestoId']);
+    const partidaId = this.parseParamNumber(params['partidaId']);
+    const rubroId = this.parseParamNumber(params['rubroId']);
+
+    this.form.patchValue({
+      presupuesto_id: presupuestoId,
+      partidaPlanificada_id: partidaId,
+      rubro_id: rubroId,
+    });
+  }
+
+  private parseParamNumber(value: unknown): number | null {
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
   }
 }
