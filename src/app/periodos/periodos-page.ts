@@ -36,88 +36,82 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
           Selecciona un periodo para ver las partidas planificadas.
         </div>
         <ng-container *ngIf="selectedPresupuestoId() !== null">
-          <div class="row g-3">
-            <div class="col-12 col-lg-4">
-              <div class="card h-100">
-                <div class="card-header">Ingresos</div>
-                <div class="card-body">
-                  <div *ngIf="ingresos().length === 0" class="text-muted">Sin ingresos.</div>
-                  <div class="table-responsive" *ngIf="ingresos().length > 0">
-                    <table class="table table-sm table-hover align-middle">
-                      <thead>
-                        <tr>
-                          <th>Descripción</th>
-                          <th>Rubro</th>
-                          <th class="text-end">Monto comprometido</th>
-                          <th>Fecha objetivo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let item of ingresos()">
-                          <td>{{ item.descripcion }}</td>
-                          <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+          <div class="d-flex flex-column gap-3">
+            <div class="card w-100">
+              <div class="card-header">Ingresos</div>
+              <div class="card-body">
+                <div *ngIf="ingresos().length === 0" class="text-muted">Sin ingresos.</div>
+                <div class="table-responsive" *ngIf="ingresos().length > 0">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Descripción</th>
+                        <th>Rubro</th>
+                        <th class="text-end">Monto comprometido</th>
+                        <th>Fecha objetivo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of ingresos()">
+                        <td>{{ item.descripcion }}</td>
+                        <td>{{ item.rubro.nombre }}</td>
+                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td>{{ item.fechaObjetivo || '—' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-            <div class="col-12 col-lg-4">
-              <div class="card h-100">
-                <div class="card-header">Gastos</div>
-                <div class="card-body">
-                  <div *ngIf="gastos().length === 0" class="text-muted">Sin gastos.</div>
-                  <div class="table-responsive" *ngIf="gastos().length > 0">
-                    <table class="table table-sm table-hover align-middle">
-                      <thead>
-                        <tr>
-                          <th>Descripción</th>
-                          <th>Rubro</th>
-                          <th class="text-end">Monto comprometido</th>
-                          <th>Fecha objetivo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let item of gastos()">
-                          <td>{{ item.descripcion }}</td>
-                          <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+            <div class="card w-100">
+              <div class="card-header">Gastos</div>
+              <div class="card-body">
+                <div *ngIf="gastos().length === 0" class="text-muted">Sin gastos.</div>
+                <div class="table-responsive" *ngIf="gastos().length > 0">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Descripción</th>
+                        <th>Rubro</th>
+                        <th class="text-end">Monto comprometido</th>
+                        <th>Fecha objetivo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of gastos()">
+                        <td>{{ item.descripcion }}</td>
+                        <td>{{ item.rubro.nombre }}</td>
+                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td>{{ item.fechaObjetivo || '—' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
-            <div class="col-12 col-lg-4">
-              <div class="card h-100">
-                <div class="card-header">Ahorro</div>
-                <div class="card-body">
-                  <div *ngIf="ahorro().length === 0" class="text-muted">Sin ahorro.</div>
-                  <div class="table-responsive" *ngIf="ahorro().length > 0">
-                    <table class="table table-sm table-hover align-middle">
-                      <thead>
-                        <tr>
-                          <th>Descripción</th>
-                          <th>Rubro</th>
-                          <th class="text-end">Monto comprometido</th>
-                          <th>Fecha objetivo</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let item of ahorro()">
-                          <td>{{ item.descripcion }}</td>
-                          <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td>{{ item.fechaObjetivo || '—' }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+            <div class="card w-100">
+              <div class="card-header">Ahorro</div>
+              <div class="card-body">
+                <div *ngIf="ahorro().length === 0" class="text-muted">Sin ahorro.</div>
+                <div class="table-responsive" *ngIf="ahorro().length > 0">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Descripción</th>
+                        <th>Rubro</th>
+                        <th class="text-end">Monto comprometido</th>
+                        <th>Fecha objetivo</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of ahorro()">
+                        <td>{{ item.descripcion }}</td>
+                        <td>{{ item.rubro.nombre }}</td>
+                        <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td>{{ item.fechaObjetivo || '—' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
