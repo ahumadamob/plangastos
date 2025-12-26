@@ -50,6 +50,24 @@ export class PartidaPlanificadaService {
     return this.http.get<ApiResponse<Rubro[]>>(`${this.baseUrl}/rubro`);
   }
 
+  getIngresosByPresupuesto(presupuestoId: number): Observable<ApiResponse<PartidaPlanificada[]>> {
+    return this.http.get<ApiResponse<PartidaPlanificada[]>>(
+      `${this.baseUrl}/partida-planificada/${presupuestoId}/ingresos`
+    );
+  }
+
+  getGastosByPresupuesto(presupuestoId: number): Observable<ApiResponse<PartidaPlanificada[]>> {
+    return this.http.get<ApiResponse<PartidaPlanificada[]>>(
+      `${this.baseUrl}/partida-planificada/${presupuestoId}/gastos`
+    );
+  }
+
+  getAhorroByPresupuesto(presupuestoId: number): Observable<ApiResponse<PartidaPlanificada[]>> {
+    return this.http.get<ApiResponse<PartidaPlanificada[]>>(
+      `${this.baseUrl}/partida-planificada/${presupuestoId}/ahorro`
+    );
+  }
+
   create(payload: PartidaPlanificadaRequestDto): Observable<ApiResponse<PartidaPlanificada>> {
     return this.http.post<ApiResponse<PartidaPlanificada>>(
       `${this.baseUrl}/partida-planificada`,

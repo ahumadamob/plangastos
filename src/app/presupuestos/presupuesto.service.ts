@@ -31,6 +31,11 @@ export interface PresupuestoRequestDto {
   presupuestoOrigen_id?: number | null;
 }
 
+export interface PresupuestoDropdown {
+  id: number;
+  nombre: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -57,5 +62,9 @@ export class PresupuestoService {
 
   delete(id: number): Observable<ApiResponse<unknown>> {
     return this.http.delete<ApiResponse<unknown>>(`${this.baseUrl}/presupuesto/${id}`);
+  }
+
+  getDropdown(): Observable<ApiResponse<PresupuestoDropdown[]>> {
+    return this.http.get<ApiResponse<PresupuestoDropdown[]>>(`${this.baseUrl}/presupuesto/dropdown`);
   }
 }
