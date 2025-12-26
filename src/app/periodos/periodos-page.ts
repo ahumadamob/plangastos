@@ -59,6 +59,13 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2" class="text-end">Total</th>
+                        <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
+                        <th></th>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
               </div>
@@ -85,6 +92,13 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2" class="text-end">Total</th>
+                        <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
+                        <th></th>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
               </div>
@@ -111,6 +125,13 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
+                    <tfoot>
+                      <tr>
+                        <th colspan="2" class="text-end">Total</th>
+                        <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
+                        <th></th>
+                      </tr>
+                    </tfoot>
                   </table>
                 </div>
               </div>
@@ -189,5 +210,9 @@ export class PeriodosPage implements OnInit {
       },
       complete: () => this.loadingData.set(false),
     });
+  }
+
+  protected getTotal(list: PartidaPlanificada[]): number {
+    return list.reduce((acc, item) => acc + (item.montoComprometido ?? 0), 0);
   }
 }
