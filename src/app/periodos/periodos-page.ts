@@ -48,6 +48,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -56,6 +57,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -63,6 +65,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -81,6 +84,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -89,6 +93,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -96,6 +101,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -114,6 +120,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -122,6 +129,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -129,6 +137,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -214,5 +223,13 @@ export class PeriodosPage implements OnInit {
 
   protected getTotal(list: PartidaPlanificada[]): number {
     return list.reduce((acc, item) => acc + (item.montoComprometido ?? 0), 0);
+  }
+
+  protected getTransaccionesSum(partida: PartidaPlanificada): number {
+    return (partida.transacciones ?? []).reduce((acc, tx) => acc + (tx.monto ?? 0), 0);
+  }
+
+  protected getTotalTransacciones(list: PartidaPlanificada[]): number {
+    return list.reduce((acc, item) => acc + this.getTransaccionesSum(item), 0);
   }
 }

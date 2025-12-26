@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.service';
 import { Presupuesto } from '../presupuestos/presupuesto.service';
 import { Rubro } from '../rubros/rubro.service';
 
@@ -11,6 +12,19 @@ export interface ApiResponse<T> {
   timestamp: string;
 }
 
+export interface PartidaPlanificadaTransaccion {
+  id: number;
+  presupuesto: Presupuesto;
+  rubro: Rubro;
+  descripcion: string;
+  cuenta: CuentaFinanciera;
+  fecha: string;
+  monto: number;
+  referenciaExterna?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface PartidaPlanificada {
   id: number;
   presupuesto: Presupuesto;
@@ -18,6 +32,7 @@ export interface PartidaPlanificada {
   descripcion: string;
   montoComprometido: number;
   fechaObjetivo?: string | null;
+  transacciones?: PartidaPlanificadaTransaccion[];
   createdAt: string;
   updatedAt: string;
 }
