@@ -36,6 +36,68 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
           Selecciona un periodo para ver las partidas planificadas.
         </div>
         <ng-container *ngIf="selectedPresupuestoId() !== null">
+          <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
+            <div class="col">
+              <div class="card text-white bg-success h-100" style="max-width: 20rem; width: 100%;">
+                <div class="card-header">Ingresos</div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <span>Comprometido</span>
+                    <strong>{{ getTotal(ingresos()) | number: '1.2-2' }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Pagado</span>
+                    <strong>{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-danger h-100" style="max-width: 20rem; width: 100%;">
+                <div class="card-header">Gastos</div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <span>Comprometido</span>
+                    <strong>{{ getTotal(gastos()) | number: '1.2-2' }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Pagado</span>
+                    <strong>{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card bg-light h-100" style="max-width: 20rem; width: 100%;">
+                <div class="card-header">Ahorro</div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <span>Comprometido</span>
+                    <strong>{{ getTotal(ahorro()) | number: '1.2-2' }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Pagado</span>
+                    <strong>{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card text-white bg-info h-100" style="max-width: 20rem; width: 100%;">
+                <div class="card-header">Total</div>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                    <span>Comprometido</span>
+                    <strong>{{ getSaldoComprometido() | number: '1.2-2' }}</strong>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span>Pagado</span>
+                    <strong>{{ getSaldoReal() | number: '1.2-2' }}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="d-flex flex-column gap-3">
             <div class="card w-100">
               <div class="card-header">Ingresos</div>
@@ -48,6 +110,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -56,6 +119,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -63,6 +127,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -81,6 +146,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -89,6 +155,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -96,6 +163,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -114,6 +182,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <th>Descripción</th>
                         <th>Rubro</th>
                         <th class="text-end">Monto comprometido</th>
+                        <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
                       </tr>
                     </thead>
@@ -122,6 +191,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                         <td>{{ item.descripcion }}</td>
                         <td>{{ item.rubro.nombre }}</td>
                         <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
+                        <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                         <td>{{ item.fechaObjetivo || '—' }}</td>
                       </tr>
                     </tbody>
@@ -129,6 +199,7 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
                         <th></th>
                       </tr>
                     </tfoot>
@@ -214,5 +285,25 @@ export class PeriodosPage implements OnInit {
 
   protected getTotal(list: PartidaPlanificada[]): number {
     return list.reduce((acc, item) => acc + (item.montoComprometido ?? 0), 0);
+  }
+
+  protected getTransaccionesSum(partida: PartidaPlanificada): number {
+    return (partida.transacciones ?? []).reduce((acc, tx) => acc + (tx.monto ?? 0), 0);
+  }
+
+  protected getTotalTransacciones(list: PartidaPlanificada[]): number {
+    return list.reduce((acc, item) => acc + this.getTransaccionesSum(item), 0);
+  }
+
+  protected getSaldoComprometido(): number {
+    return this.getTotal(this.ingresos()) - this.getTotal(this.gastos()) - this.getTotal(this.ahorro());
+  }
+
+  protected getSaldoReal(): number {
+    return (
+      this.getTotalTransacciones(this.ingresos()) -
+      this.getTotalTransacciones(this.gastos()) -
+      this.getTotalTransacciones(this.ahorro())
+    );
   }
 }
