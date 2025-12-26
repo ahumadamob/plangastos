@@ -833,13 +833,13 @@ export class PeriodosPage implements OnInit {
     }
 
     const today = this.getTodayAtMidnight();
-    if (fechaObjetivo >= today) {
+    if (fechaObjetivo <= today) {
       return 'danger';
     }
 
-    const tenDaysAgo = new Date(today);
-    tenDaysAgo.setDate(today.getDate() - 10);
-    if (fechaObjetivo >= tenDaysAgo && fechaObjetivo < today) {
+    const tenDaysAhead = new Date(today);
+    tenDaysAhead.setDate(today.getDate() + 10);
+    if (fechaObjetivo > today && fechaObjetivo <= tenDaysAhead) {
       return 'warning';
     }
 
