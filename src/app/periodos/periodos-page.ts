@@ -191,7 +191,7 @@ import { RubroService } from '../rubros/rubro.service';
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              <span aria-hidden="true" class="view-icon">👁</span>
+                              <span aria-hidden="true" class="view-icon">🔍</span>
                             </button>
                             <button
                               type="button"
@@ -469,7 +469,7 @@ import { RubroService } from '../rubros/rubro.service';
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              <span aria-hidden="true" class="view-icon">👁</span>
+                              <span aria-hidden="true" class="view-icon">🔍</span>
                             </button>
                             <button
                               type="button"
@@ -747,7 +747,7 @@ import { RubroService } from '../rubros/rubro.service';
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              <span aria-hidden="true" class="view-icon">👁</span>
+                              <span aria-hidden="true" class="view-icon">🔍</span>
                             </button>
                             <button
                               type="button"
