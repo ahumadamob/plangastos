@@ -202,6 +202,16 @@ import { RubroService } from '../rubros/rubro.service';
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
+                              (click)="confirmDeletePartida(item)"
+                              [disabled]="deletingPartidaId() === item.id"
+                              aria-label="Eliminar partida"
+                              title="Eliminar partida"
+                            >
+                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
@@ -479,6 +489,16 @@ import { RubroService } from '../rubros/rubro.service';
                               title="Consolidar gasto"
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
+                              (click)="confirmDeletePartida(item)"
+                              [disabled]="deletingPartidaId() === item.id"
+                              aria-label="Eliminar partida"
+                              title="Eliminar partida"
+                            >
+                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
                             </button>
                           </td>
                         </tr>
@@ -758,6 +778,16 @@ import { RubroService } from '../rubros/rubro.service';
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
+                              (click)="confirmDeletePartida(item)"
+                              [disabled]="deletingPartidaId() === item.id"
+                              aria-label="Eliminar partida"
+                              title="Eliminar partida"
+                            >
+                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
@@ -1017,6 +1047,15 @@ import { RubroService } from '../rubros/rubro.service';
         font-size: 1rem;
         line-height: 1;
       }
+
+      .delete-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
     `,
   ],
 })
@@ -1031,6 +1070,7 @@ export class PeriodosPage implements OnInit {
   protected readonly selectedPresupuestoId = signal<number | null>(null);
   protected readonly viewingTransactionsPartidaId = signal<number | null>(null);
   protected readonly inlineFormPartidaId = signal<number | null>(null);
+  protected readonly deletingPartidaId = signal<number | null>(null);
   protected readonly cuentasFinancieras = signal<CuentaFinanciera[]>([]);
   protected readonly savingTransaction = signal(false);
   protected readonly inlineStatusMessage = signal('');
@@ -1412,6 +1452,28 @@ export class PeriodosPage implements OnInit {
 
   private hasTransacciones(partida: PartidaPlanificada): boolean {
     return (partida.transacciones?.length ?? 0) > 0;
+  }
+
+  protected confirmDeletePartida(partida: PartidaPlanificada): void {
+    const confirmed = window.confirm(`¿Eliminar la partida "${partida.descripcion}"?`);
+    if (!confirmed) {
+      return;
+    }
+
+    this.deletePartida(partida);
+  }
+
+  private deletePartida(partida: PartidaPlanificada): void {
+    this.deletingPartidaId.set(partida.id);
+    this.errorMessage.set('');
+    this.closeInlineForm();
+    this.closeTransactionsView();
+
+    this.partidaPlanificadaService.delete(partida.id).subscribe({
+      next: () => this.loadData(),
+      error: () => this.errorMessage.set('No se pudo eliminar la partida planificada.'),
+      complete: () => this.deletingPartidaId.set(null),
+    });
   }
 
   private getFechaObjetivoDate(fechaObjetivo?: string | null): Date | null {
