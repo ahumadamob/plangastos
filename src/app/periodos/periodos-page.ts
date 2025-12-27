@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { forkJoin } from 'rxjs';
 import {
   PartidaPlanificada,
+  PartidaPlanificadaTransaccion,
   PartidaPlanificadaRequestDto,
   PartidaPlanificadaService,
 } from '../partidas-planificadas/partida-planificada.service';
@@ -69,6 +70,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <th>Fecha</th>
                           <th class="text-end">Monto</th>
                           <th>Referencia</th>
+                          <th class="text-end">Acciones</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -78,6 +80,18 @@ import { RubroService } from '../rubros/rubro.service';
                           <td>{{ transaccion.fecha | date: 'dd/MM/yyyy' }}</td>
                           <td class="text-end">{{ transaccion.monto | number: '1.2-2' }}</td>
                           <td>{{ transaccion.referenciaExterna || '—' }}</td>
+                          <td class="text-end">
+                            <button
+                              type="button"
+                              class="btn btn-danger btn-sm rounded-circle delete-btn"
+                              (click)="confirmDeleteTransaccion(transaccion)"
+                              [disabled]="deletingTransactionId() === transaccion.id"
+                              aria-label="Eliminar transacción"
+                              title="Eliminar transacción"
+                            >
+                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                            </button>
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -1015,6 +1029,49 @@ import { RubroService } from '../rubros/rubro.service';
             </div>
           </div>
         </ng-container>
+        <ng-container *ngIf="deleteTransactionModalOpen()">
+          <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Eliminar transacción</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    (click)="closeDeleteTransactionModal()"
+                    [disabled]="deletingTransactionId() !== null"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-0">
+                    ¿Seguro que deseas eliminar la transacción
+                    <strong>{{ transaccionToDelete()?.descripcion }}</strong>?
+                  </p>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="closeDeleteTransactionModal()"
+                    [disabled]="deletingTransactionId() !== null"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="deleteTransaccion()"
+                    [disabled]="deletingTransactionId() !== null"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-backdrop fade show"></div>
+        </ng-container>
         <ng-container *ngIf="deleteModalOpen()">
           <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
             <div class="modal-dialog" role="document">
@@ -1120,6 +1177,9 @@ export class PeriodosPage implements OnInit {
   protected readonly savingTransaction = signal(false);
   protected readonly inlineStatusMessage = signal('');
   protected readonly inlineErrorMessage = signal('');
+  protected readonly deleteTransactionModalOpen = signal(false);
+  protected readonly transaccionToDelete = signal<PartidaPlanificadaTransaccion | null>(null);
+  protected readonly deletingTransactionId = signal<number | null>(null);
   protected readonly newTransactionForm: FormGroup;
   protected readonly newPlanCategory = signal<'ingreso' | 'gasto' | 'ahorro' | null>(null);
   protected readonly newPlanForm: FormGroup;
@@ -1497,6 +1557,45 @@ export class PeriodosPage implements OnInit {
 
   private hasTransacciones(partida: PartidaPlanificada): boolean {
     return (partida.transacciones?.length ?? 0) > 0;
+  }
+
+  protected confirmDeleteTransaccion(transaccion: PartidaPlanificadaTransaccion): void {
+    this.transaccionToDelete.set(transaccion);
+    this.deleteTransactionModalOpen.set(true);
+  }
+
+  protected closeDeleteTransactionModal(): void {
+    if (this.deletingTransactionId() !== null) {
+      return;
+    }
+
+    this.deleteTransactionModalOpen.set(false);
+    this.transaccionToDelete.set(null);
+  }
+
+  protected deleteTransaccion(): void {
+    const transaccion = this.transaccionToDelete();
+    if (!transaccion) {
+      this.closeDeleteTransactionModal();
+      return;
+    }
+
+    this.deleteTransactionModalOpen.set(false);
+    this.deletingTransactionId.set(transaccion.id);
+    this.errorMessage.set('');
+    this.transaccionService.delete(transaccion.id).subscribe({
+      next: () => this.loadData(),
+      error: () => {
+        this.errorMessage.set('No se pudo eliminar la transacción.');
+        this.deletingTransactionId.set(null);
+        this.transaccionToDelete.set(null);
+      },
+      complete: () => {
+        this.deletingTransactionId.set(null);
+        this.transaccionToDelete.set(null);
+        this.deleteTransactionModalOpen.set(false);
+      },
+    });
   }
 
   protected confirmDeletePartida(partida: PartidaPlanificada): void {
