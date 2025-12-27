@@ -100,7 +100,10 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
           </div>
           <div class="d-flex flex-column gap-3">
             <div class="card w-100">
-              <div class="card-header">Ingresos</div>
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Ingresos</span>
+                <button type="button" class="btn btn-success btn-sm">Nuevo Ingreso</button>
+              </div>
               <div class="card-body">
                 <div *ngIf="ingresos().length === 0" class="text-muted">Sin ingresos.</div>
                 <div class="table-responsive" *ngIf="ingresos().length > 0">
@@ -259,7 +262,10 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               </div>
             </div>
             <div class="card w-100">
-              <div class="card-header">Gastos</div>
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Gastos</span>
+                <button type="button" class="btn btn-success btn-sm">Nuevo Gasto</button>
+              </div>
               <div class="card-body">
                 <div *ngIf="gastos().length === 0" class="text-muted">Sin gastos.</div>
                 <div class="table-responsive" *ngIf="gastos().length > 0">
@@ -418,7 +424,10 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
               </div>
             </div>
             <div class="card w-100">
-              <div class="card-header">Ahorro</div>
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Ahorro</span>
+                <button type="button" class="btn btn-success btn-sm">Nuevo Ahorro</button>
+              </div>
               <div class="card-body">
                 <div *ngIf="ahorro().length === 0" class="text-muted">Sin ahorro.</div>
                 <div class="table-responsive" *ngIf="ahorro().length > 0">
