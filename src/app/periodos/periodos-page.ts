@@ -211,8 +211,8 @@ import { RubroService } from '../rubros/rubro.service';
                               type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Consolidar gasto"
-                              title="Consolidar gasto"
+                              aria-label="Ingresar transacción"
+                              title="Ingresar transacción"
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
@@ -499,8 +499,8 @@ import { RubroService } from '../rubros/rubro.service';
                               type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Consolidar gasto"
-                              title="Consolidar gasto"
+                              aria-label="Ingresar transacción"
+                              title="Ingresar transacción"
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
@@ -787,8 +787,8 @@ import { RubroService } from '../rubros/rubro.service';
                               type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
-                              aria-label="Consolidar gasto"
-                              title="Consolidar gasto"
+                              aria-label="Ingresar transacción"
+                              title="Ingresar transacción"
                             >
                               <span aria-hidden="true" class="consolidate-icon">⇄</span>
                             </button>
