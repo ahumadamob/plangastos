@@ -1015,6 +1015,49 @@ import { RubroService } from '../rubros/rubro.service';
             </div>
           </div>
         </ng-container>
+        <ng-container *ngIf="deleteModalOpen()">
+          <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Eliminar partida</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    (click)="closeDeleteModal()"
+                    [disabled]="deletingPartidaId() !== null"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-0">
+                    ¿Seguro que deseas eliminar la partida
+                    <strong>{{ partidaToDelete()?.descripcion }}</strong>?
+                  </p>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="closeDeleteModal()"
+                    [disabled]="deletingPartidaId() !== null"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="deletePartida()"
+                    [disabled]="deletingPartidaId() !== null"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-backdrop fade show"></div>
+        </ng-container>
       </div>
     </div>
   `,
@@ -1070,6 +1113,8 @@ export class PeriodosPage implements OnInit {
   protected readonly selectedPresupuestoId = signal<number | null>(null);
   protected readonly viewingTransactionsPartidaId = signal<number | null>(null);
   protected readonly inlineFormPartidaId = signal<number | null>(null);
+  protected readonly deleteModalOpen = signal(false);
+  protected readonly partidaToDelete = signal<PartidaPlanificada | null>(null);
   protected readonly deletingPartidaId = signal<number | null>(null);
   protected readonly cuentasFinancieras = signal<CuentaFinanciera[]>([]);
   protected readonly savingTransaction = signal(false);
@@ -1455,24 +1500,42 @@ export class PeriodosPage implements OnInit {
   }
 
   protected confirmDeletePartida(partida: PartidaPlanificada): void {
-    const confirmed = window.confirm(`¿Eliminar la partida "${partida.descripcion}"?`);
-    if (!confirmed) {
+    this.partidaToDelete.set(partida);
+    this.deleteModalOpen.set(true);
+    this.closeInlineForm();
+    this.closeTransactionsView();
+  }
+
+  protected closeDeleteModal(): void {
+    if (this.deletingPartidaId() !== null) {
       return;
     }
 
-    this.deletePartida(partida);
+    this.deleteModalOpen.set(false);
+    this.partidaToDelete.set(null);
   }
 
-  private deletePartida(partida: PartidaPlanificada): void {
+  protected deletePartida(): void {
+    const partida = this.partidaToDelete();
+    if (!partida) {
+      this.closeDeleteModal();
+      return;
+    }
+
     this.deletingPartidaId.set(partida.id);
     this.errorMessage.set('');
-    this.closeInlineForm();
-    this.closeTransactionsView();
 
     this.partidaPlanificadaService.delete(partida.id).subscribe({
-      next: () => this.loadData(),
+      next: () => {
+        this.loadData();
+        this.closeDeleteModal();
+      },
       error: () => this.errorMessage.set('No se pudo eliminar la partida planificada.'),
-      complete: () => this.deletingPartidaId.set(null),
+      complete: () => {
+        this.deletingPartidaId.set(null);
+        this.partidaToDelete.set(null);
+        this.deleteModalOpen.set(false);
+      },
     });
   }
 
