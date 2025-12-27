@@ -42,6 +42,50 @@ import { RubroService } from '../rubros/rubro.service';
           Selecciona un periodo para ver las partidas planificadas.
         </div>
         <ng-container *ngIf="selectedPresupuestoId() !== null">
+          <ng-template #transactionsList let-partida>
+            <tr *ngIf="viewingTransactionsPartidaId() === partida.id">
+              <td colspan="6">
+                <div class="border rounded p-3 bg-light">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                      <div class="fw-bold">Transacciones de: {{ partida.descripcion }}</div>
+                      <div class="text-muted small">
+                        Total registrado: {{ getTransaccionesSum(partida) | number: '1.2-2' }}
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeTransactionsView()">
+                      Cerrar
+                    </button>
+                  </div>
+                  <div *ngIf="(partida.transacciones?.length ?? 0) === 0" class="text-muted fst-italic">
+                    No hay transacciones registradas para esta partida.
+                  </div>
+                  <div *ngIf="(partida.transacciones?.length ?? 0) > 0" class="table-responsive">
+                    <table class="table table-sm mb-0">
+                      <thead>
+                        <tr>
+                          <th>Descripción</th>
+                          <th>Cuenta</th>
+                          <th>Fecha</th>
+                          <th class="text-end">Monto</th>
+                          <th>Referencia</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let transaccion of partida.transacciones">
+                          <td>{{ transaccion.descripcion }}</td>
+                          <td>{{ transaccion.cuenta.nombre }}</td>
+                          <td>{{ transaccion.fecha | date: 'dd/MM/yyyy' }}</td>
+                          <td class="text-end">{{ transaccion.monto | number: '1.2-2' }}</td>
+                          <td>{{ transaccion.referenciaExterna || '—' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
           <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
             <div class="col">
               <div class="card text-white bg-success h-100" style="max-width: 20rem; width: 100%;">
@@ -142,6 +186,15 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
+                              class="btn btn-info btn-sm me-2"
+                              (click)="toggleTransactionsView(item)"
+                              aria-label="Ver transacciones"
+                              title="Ver transacciones"
+                            >
+                              Ver transacciones
+                            </button>
+                            <button
+                              type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
                               aria-label="Consolidar gasto"
@@ -151,6 +204,7 @@ import { RubroService } from '../rubros/rubro.service';
                             </button>
                           </td>
                         </tr>
+                        <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
                           <td colspan="6">
                             <div class="border rounded p-3">
@@ -410,6 +464,15 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
+                              class="btn btn-info btn-sm me-2"
+                              (click)="toggleTransactionsView(item)"
+                              aria-label="Ver transacciones"
+                              title="Ver transacciones"
+                            >
+                              Ver transacciones
+                            </button>
+                            <button
+                              type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
                               aria-label="Consolidar gasto"
@@ -419,6 +482,7 @@ import { RubroService } from '../rubros/rubro.service';
                             </button>
                           </td>
                         </tr>
+                        <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
                           <td colspan="6">
                             <div class="border rounded p-3">
@@ -678,6 +742,15 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
+                              class="btn btn-info btn-sm me-2"
+                              (click)="toggleTransactionsView(item)"
+                              aria-label="Ver transacciones"
+                              title="Ver transacciones"
+                            >
+                              Ver transacciones
+                            </button>
+                            <button
+                              type="button"
                               class="btn btn-primary btn-sm rounded-circle consolidate-btn"
                               (click)="toggleNewTransactionForm(item)"
                               aria-label="Consolidar gasto"
@@ -687,6 +760,7 @@ import { RubroService } from '../rubros/rubro.service';
                             </button>
                           </td>
                         </tr>
+                        <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
                           <td colspan="6">
                             <div class="border rounded p-3">
@@ -941,6 +1015,7 @@ export class PeriodosPage implements OnInit {
   protected readonly loadingData = signal(false);
   protected readonly errorMessage = signal('');
   protected readonly selectedPresupuestoId = signal<number | null>(null);
+  protected readonly viewingTransactionsPartidaId = signal<number | null>(null);
   protected readonly inlineFormPartidaId = signal<number | null>(null);
   protected readonly cuentasFinancieras = signal<CuentaFinanciera[]>([]);
   protected readonly savingTransaction = signal(false);
@@ -1077,7 +1152,23 @@ export class PeriodosPage implements OnInit {
     };
   }
 
+  protected toggleTransactionsView(partida: PartidaPlanificada): void {
+    if (this.viewingTransactionsPartidaId() === partida.id) {
+      this.closeTransactionsView();
+      return;
+    }
+
+    this.closeInlineForm();
+    this.viewingTransactionsPartidaId.set(partida.id);
+  }
+
+  protected closeTransactionsView(): void {
+    this.viewingTransactionsPartidaId.set(null);
+  }
+
   protected toggleNewTransactionForm(partida: PartidaPlanificada): void {
+    this.closeTransactionsView();
+
     if (this.inlineFormPartidaId() === partida.id) {
       this.closeInlineForm();
       return;
