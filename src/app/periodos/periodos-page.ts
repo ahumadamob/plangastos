@@ -1522,13 +1522,12 @@ export class PeriodosPage implements OnInit {
       return;
     }
 
+    this.deleteModalOpen.set(false);
     this.deletingPartidaId.set(partida.id);
     this.errorMessage.set('');
-
     this.partidaPlanificadaService.delete(partida.id).subscribe({
       next: () => {
         this.loadData();
-        this.closeDeleteModal();
       },
       error: () => this.errorMessage.set('No se pudo eliminar la partida planificada.'),
       complete: () => {
