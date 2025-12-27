@@ -103,7 +103,7 @@ import { RubroService } from '../rubros/rubro.service';
               </div>
             </div>
             <div class="col">
-              <div class="card text-white bg-danger h-100" style="max-width: 20rem; width: 100%;">
+              <div class="card text-dark bg-warning h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Gastos</div>
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
@@ -133,7 +133,7 @@ import { RubroService } from '../rubros/rubro.service';
               </div>
             </div>
             <div class="col">
-              <div class="card text-white bg-info h-100" style="max-width: 20rem; width: 100%;">
+              <div class="card text-white bg-dark h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Total</div>
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
