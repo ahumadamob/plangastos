@@ -1,5 +1,6 @@
-﻿$web-font-path: false;
+$web-font-path: false;
 
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
 @import "bootswatch/dist/cosmo/variables";
 @import "bootstrap/scss/bootstrap";
 @import "bootswatch/dist/cosmo/bootswatch";
