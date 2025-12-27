@@ -1204,13 +1204,18 @@ export class PeriodosPage implements OnInit {
   }
 
   protected getRubrosByCategory(category: 'ingreso' | 'gasto' | 'ahorro'): Rubro[] {
-    const naturalezaMap: Record<'ingreso' | 'gasto' | 'ahorro', string> = {
-      ingreso: 'INGRESO',
-      gasto: 'EGRESO',
-      ahorro: 'AHORRO',
+    const naturalezaMap: Record<'ingreso' | 'gasto' | 'ahorro', string[]> = {
+      ingreso: ['INGRESO'],
+      gasto: ['GASTO', 'EGRESO'],
+      ahorro: ['AHORRO'],
     };
 
-    return this.rubros().filter((rubro) => rubro.naturaleza === naturalezaMap[category]);
+    const allowedNaturalezas = naturalezaMap[category];
+
+    return this.rubros().filter((rubro) => {
+      const naturaleza = (rubro.naturaleza || '').toUpperCase();
+      return allowedNaturalezas.includes(naturaleza);
+    });
   }
 
   protected getSelectedPeriodoNombre(): string | undefined {
