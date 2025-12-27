@@ -2,10 +2,16 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
-import { PartidaPlanificada, PartidaPlanificadaService } from '../partidas-planificadas/partida-planificada.service';
+import {
+  PartidaPlanificada,
+  PartidaPlanificadaRequestDto,
+  PartidaPlanificadaService,
+} from '../partidas-planificadas/partida-planificada.service';
+import { Rubro } from '../rubros/rubro.service';
 import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupuesto.service';
 import { TransaccionRequestDto, TransaccionService } from '../transacciones/transaccion.service';
 import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.service';
+import { RubroService } from '../rubros/rubro.service';
 
 @Component({
   selector: 'app-periodos-page',
@@ -102,7 +108,14 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
             <div class="card w-100">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Ingresos</span>
-                <button type="button" class="btn btn-success btn-sm">Nuevo Ingreso</button>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  (click)="openNewPlanForm('ingreso')"
+                  [disabled]="selectedPresupuestoId() === null || loadingData()"
+                >
+                  Nuevo Ingreso
+                </button>
               </div>
               <div class="card-body">
                 <div *ngIf="ingresos().length === 0" class="text-muted">Sin ingresos.</div>
@@ -260,11 +273,117 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                   </table>
                 </div>
               </div>
+              <div class="card-body border-top" *ngIf="newPlanCategory() === 'ingreso'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <div class="fw-bold">Nueva partida planificada de ingreso</div>
+                    <div class="text-muted small">Periodo: {{ getSelectedPeriodoNombre() || '—' }}</div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="closeNewPlanForm()"
+                    [disabled]="newPlanSaving()"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+                <form [formGroup]="newPlanForm" (ngSubmit)="submitNewPlanForm()" novalidate>
+                  <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                      <label for="rubro-ingreso" class="form-label">Rubro</label>
+                      <select
+                        id="rubro-ingreso"
+                        class="form-select"
+                        formControlName="rubro_id"
+                        [class.is-invalid]="isNewPlanInvalid('rubro_id')"
+                        required
+                      >
+                        <option [ngValue]="null" disabled>Selecciona un rubro</option>
+                        <option *ngFor="let rubro of getRubrosByCategory('ingreso')" [ngValue]="rubro.id">
+                          {{ rubro.nombre }}
+                        </option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('rubro_id')">
+                        Selecciona el rubro de la partida.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label for="descripcion-ingreso" class="form-label">Descripción</label>
+                      <input
+                        id="descripcion-ingreso"
+                        type="text"
+                        class="form-control"
+                        formControlName="descripcion"
+                        [class.is-invalid]="isNewPlanInvalid('descripcion')"
+                        autocomplete="off"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('descripcion')">
+                        Ingresa una descripción (mínimo 3 caracteres).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="monto-ingreso" class="form-label">Monto comprometido</label>
+                      <input
+                        id="monto-ingreso"
+                        type="number"
+                        class="form-control"
+                        formControlName="montoComprometido"
+                        [class.is-invalid]="isNewPlanInvalid('montoComprometido')"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('montoComprometido')">
+                        Ingresa un monto comprometido válido.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="fecha-ingreso" class="form-label">Fecha objetivo</label>
+                      <input
+                        id="fecha-ingreso"
+                        type="date"
+                        class="form-control"
+                        formControlName="fechaObjetivo"
+                      />
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                      <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
+                        Guardar partida
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="closeNewPlanForm()"
+                        [disabled]="newPlanSaving()"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                    <div class="col-12">
+                      <div *ngIf="newPlanStatusMessage()" class="alert alert-success mb-0">
+                        {{ newPlanStatusMessage() }}
+                      </div>
+                      <div *ngIf="newPlanErrorMessage()" class="alert alert-danger mb-0">
+                        {{ newPlanErrorMessage() }}
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
             <div class="card w-100">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Gastos</span>
-                <button type="button" class="btn btn-success btn-sm">Nuevo Gasto</button>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  (click)="openNewPlanForm('gasto')"
+                  [disabled]="selectedPresupuestoId() === null || loadingData()"
+                >
+                  Nuevo Gasto
+                </button>
               </div>
               <div class="card-body">
                 <div *ngIf="gastos().length === 0" class="text-muted">Sin gastos.</div>
@@ -422,11 +541,117 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                   </table>
                 </div>
               </div>
+              <div class="card-body border-top" *ngIf="newPlanCategory() === 'gasto'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <div class="fw-bold">Nueva partida planificada de gasto</div>
+                    <div class="text-muted small">Periodo: {{ getSelectedPeriodoNombre() || '—' }}</div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="closeNewPlanForm()"
+                    [disabled]="newPlanSaving()"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+                <form [formGroup]="newPlanForm" (ngSubmit)="submitNewPlanForm()" novalidate>
+                  <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                      <label for="rubro-gasto" class="form-label">Rubro</label>
+                      <select
+                        id="rubro-gasto"
+                        class="form-select"
+                        formControlName="rubro_id"
+                        [class.is-invalid]="isNewPlanInvalid('rubro_id')"
+                        required
+                      >
+                        <option [ngValue]="null" disabled>Selecciona un rubro</option>
+                        <option *ngFor="let rubro of getRubrosByCategory('gasto')" [ngValue]="rubro.id">
+                          {{ rubro.nombre }}
+                        </option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('rubro_id')">
+                        Selecciona el rubro de la partida.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label for="descripcion-gasto" class="form-label">Descripción</label>
+                      <input
+                        id="descripcion-gasto"
+                        type="text"
+                        class="form-control"
+                        formControlName="descripcion"
+                        [class.is-invalid]="isNewPlanInvalid('descripcion')"
+                        autocomplete="off"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('descripcion')">
+                        Ingresa una descripción (mínimo 3 caracteres).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="monto-gasto" class="form-label">Monto comprometido</label>
+                      <input
+                        id="monto-gasto"
+                        type="number"
+                        class="form-control"
+                        formControlName="montoComprometido"
+                        [class.is-invalid]="isNewPlanInvalid('montoComprometido')"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('montoComprometido')">
+                        Ingresa un monto comprometido válido.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="fecha-gasto" class="form-label">Fecha objetivo</label>
+                      <input
+                        id="fecha-gasto"
+                        type="date"
+                        class="form-control"
+                        formControlName="fechaObjetivo"
+                      />
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                      <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
+                        Guardar partida
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="closeNewPlanForm()"
+                        [disabled]="newPlanSaving()"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                    <div class="col-12">
+                      <div *ngIf="newPlanStatusMessage()" class="alert alert-success mb-0">
+                        {{ newPlanStatusMessage() }}
+                      </div>
+                      <div *ngIf="newPlanErrorMessage()" class="alert alert-danger mb-0">
+                        {{ newPlanErrorMessage() }}
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
             <div class="card w-100">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <span>Ahorro</span>
-                <button type="button" class="btn btn-success btn-sm">Nuevo Ahorro</button>
+                <button
+                  type="button"
+                  class="btn btn-success btn-sm"
+                  (click)="openNewPlanForm('ahorro')"
+                  [disabled]="selectedPresupuestoId() === null || loadingData()"
+                >
+                  Nuevo Ahorro
+                </button>
               </div>
               <div class="card-body">
                 <div *ngIf="ahorro().length === 0" class="text-muted">Sin ahorro.</div>
@@ -584,6 +809,105 @@ import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.servi
                   </table>
                 </div>
               </div>
+              <div class="card-body border-top" *ngIf="newPlanCategory() === 'ahorro'">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <div class="fw-bold">Nueva partida planificada de ahorro</div>
+                    <div class="text-muted small">Periodo: {{ getSelectedPeriodoNombre() || '—' }}</div>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    (click)="closeNewPlanForm()"
+                    [disabled]="newPlanSaving()"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+                <form [formGroup]="newPlanForm" (ngSubmit)="submitNewPlanForm()" novalidate>
+                  <div class="row g-2">
+                    <div class="col-12 col-md-4">
+                      <label for="rubro-ahorro" class="form-label">Rubro</label>
+                      <select
+                        id="rubro-ahorro"
+                        class="form-select"
+                        formControlName="rubro_id"
+                        [class.is-invalid]="isNewPlanInvalid('rubro_id')"
+                        required
+                      >
+                        <option [ngValue]="null" disabled>Selecciona un rubro</option>
+                        <option *ngFor="let rubro of getRubrosByCategory('ahorro')" [ngValue]="rubro.id">
+                          {{ rubro.nombre }}
+                        </option>
+                      </select>
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('rubro_id')">
+                        Selecciona el rubro de la partida.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label for="descripcion-ahorro" class="form-label">Descripción</label>
+                      <input
+                        id="descripcion-ahorro"
+                        type="text"
+                        class="form-control"
+                        formControlName="descripcion"
+                        [class.is-invalid]="isNewPlanInvalid('descripcion')"
+                        autocomplete="off"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('descripcion')">
+                        Ingresa una descripción (mínimo 3 caracteres).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="monto-ahorro" class="form-label">Monto comprometido</label>
+                      <input
+                        id="monto-ahorro"
+                        type="number"
+                        class="form-control"
+                        formControlName="montoComprometido"
+                        [class.is-invalid]="isNewPlanInvalid('montoComprometido')"
+                        step="0.01"
+                        min="0"
+                        required
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('montoComprometido')">
+                        Ingresa un monto comprometido válido.
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="fecha-ahorro" class="form-label">Fecha objetivo</label>
+                      <input
+                        id="fecha-ahorro"
+                        type="date"
+                        class="form-control"
+                        formControlName="fechaObjetivo"
+                      />
+                    </div>
+                    <div class="col-12 d-flex gap-2">
+                      <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
+                        Guardar partida
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        (click)="closeNewPlanForm()"
+                        [disabled]="newPlanSaving()"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                    <div class="col-12">
+                      <div *ngIf="newPlanStatusMessage()" class="alert alert-success mb-0">
+                        {{ newPlanStatusMessage() }}
+                      </div>
+                      <div *ngIf="newPlanErrorMessage()" class="alert alert-danger mb-0">
+                        {{ newPlanErrorMessage() }}
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </ng-container>
@@ -623,12 +947,19 @@ export class PeriodosPage implements OnInit {
   protected readonly inlineStatusMessage = signal('');
   protected readonly inlineErrorMessage = signal('');
   protected readonly newTransactionForm: FormGroup;
+  protected readonly newPlanCategory = signal<'ingreso' | 'gasto' | 'ahorro' | null>(null);
+  protected readonly newPlanForm: FormGroup;
+  protected readonly newPlanSaving = signal(false);
+  protected readonly newPlanStatusMessage = signal('');
+  protected readonly newPlanErrorMessage = signal('');
+  protected readonly rubros = signal<Rubro[]>([]);
 
   constructor(
     private readonly presupuestoService: PresupuestoService,
     private readonly partidaPlanificadaService: PartidaPlanificadaService,
     private readonly transaccionService: TransaccionService,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private readonly rubroService: RubroService
   ) {
     this.newTransactionForm = this.fb.group({
       presupuesto_id: this.fb.control<number | null>(null, { validators: [Validators.required] }),
@@ -642,11 +973,23 @@ export class PeriodosPage implements OnInit {
       monto: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       partidaPlanificada_id: this.fb.control<number | null>(null),
     });
+
+    this.newPlanForm = this.fb.group({
+      presupuesto_id: this.fb.control<number | null>(null, { validators: [Validators.required] }),
+      rubro_id: this.fb.control<number | null>(null, { validators: [Validators.required] }),
+      descripcion: this.fb.control('', {
+        validators: [Validators.required, Validators.minLength(3)],
+        nonNullable: true,
+      }),
+      montoComprometido: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
+      fechaObjetivo: this.fb.control<string | null>(null),
+    });
   }
 
   ngOnInit(): void {
     this.loadDropdown();
     this.loadCuentasFinancieras();
+    this.loadRubros();
   }
 
   protected loadDropdown(): void {
@@ -666,6 +1009,7 @@ export class PeriodosPage implements OnInit {
     const value = (event.target as HTMLSelectElement).value;
     const parsedValue = value ? Number(value) : null;
     this.selectedPresupuestoId.set(Number.isNaN(parsedValue as number) ? null : parsedValue);
+    this.closeNewPlanForm();
     this.loadData();
   }
 
@@ -752,8 +1096,62 @@ export class PeriodosPage implements OnInit {
     this.inlineErrorMessage.set('');
   }
 
+  protected openNewPlanForm(category: 'ingreso' | 'gasto' | 'ahorro'): void {
+    this.newPlanCategory.set(category);
+    this.newPlanStatusMessage.set('');
+    this.newPlanErrorMessage.set('');
+    this.prepareNewPlanForm();
+  }
+
+  protected closeNewPlanForm(): void {
+    this.newPlanCategory.set(null);
+    this.newPlanStatusMessage.set('');
+    this.newPlanErrorMessage.set('');
+    this.newPlanForm.reset({
+      presupuesto_id: this.selectedPresupuestoId(),
+      rubro_id: null,
+      descripcion: '',
+      montoComprometido: null,
+      fechaObjetivo: null,
+    });
+  }
+
+  protected submitNewPlanForm(): void {
+    if (this.newPlanForm.invalid) {
+      this.newPlanForm.markAllAsTouched();
+      return;
+    }
+
+    const payload = this.newPlanForm.value as PartidaPlanificadaRequestDto;
+    this.newPlanSaving.set(true);
+    this.newPlanStatusMessage.set('');
+    this.newPlanErrorMessage.set('');
+
+    this.partidaPlanificadaService.create(payload).subscribe({
+      next: (response) => {
+        if (!response.success) {
+          this.newPlanErrorMessage.set(response.message || 'No se pudo crear la partida planificada.');
+          return;
+        }
+
+        this.newPlanStatusMessage.set(response.message || 'Partida planificada creada correctamente.');
+        this.prepareNewPlanForm();
+        this.loadData();
+      },
+      error: () => {
+        this.newPlanErrorMessage.set('No se pudo crear la partida planificada.');
+      },
+      complete: () => this.newPlanSaving.set(false),
+    });
+  }
+
   protected isInvalid(controlName: string): boolean {
     const control = this.newTransactionForm.get(controlName);
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  protected isNewPlanInvalid(controlName: string): boolean {
+    const control = this.newPlanForm.get(controlName);
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 
@@ -795,6 +1193,43 @@ export class PeriodosPage implements OnInit {
     this.transaccionService.getCuentasFinancieras().subscribe({
       next: (response) => this.cuentasFinancieras.set(response.data ?? []),
       error: () => this.inlineErrorMessage.set('No se pudieron obtener las cuentas financieras.'),
+    });
+  }
+
+  private loadRubros(): void {
+    this.rubroService.getAll().subscribe({
+      next: (response) => this.rubros.set(response.data ?? []),
+      error: () => this.newPlanErrorMessage.set('No se pudieron obtener los rubros.'),
+    });
+  }
+
+  protected getRubrosByCategory(category: 'ingreso' | 'gasto' | 'ahorro'): Rubro[] {
+    const naturalezaMap: Record<'ingreso' | 'gasto' | 'ahorro', string> = {
+      ingreso: 'INGRESO',
+      gasto: 'EGRESO',
+      ahorro: 'AHORRO',
+    };
+
+    return this.rubros().filter((rubro) => rubro.naturaleza === naturalezaMap[category]);
+  }
+
+  protected getSelectedPeriodoNombre(): string | undefined {
+    const selectedId = this.selectedPresupuestoId();
+    if (!selectedId) {
+      return undefined;
+    }
+
+    const periodo = this.dropdown().find((item) => item.id === selectedId);
+    return periodo?.nombre;
+  }
+
+  private prepareNewPlanForm(): void {
+    this.newPlanForm.reset({
+      presupuesto_id: this.selectedPresupuestoId(),
+      rubro_id: null,
+      descripcion: '',
+      montoComprometido: null,
+      fechaObjetivo: null,
     });
   }
 
