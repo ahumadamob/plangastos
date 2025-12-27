@@ -133,7 +133,7 @@ import { RubroService } from '../rubros/rubro.service';
               </div>
             </div>
             <div class="col">
-              <div class="card text-white bg-dark h-100" style="max-width: 20rem; width: 100%;">
+              <div class="card text-white bg-secondary h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Total</div>
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
@@ -154,7 +154,7 @@ import { RubroService } from '../rubros/rubro.service';
                 <span>Ingresos</span>
                 <button
                   type="button"
-                  class="btn btn-success btn-sm"
+                  class="btn btn-primary btn-sm"
                   (click)="openNewPlanForm('ingreso')"
                   [disabled]="selectedPresupuestoId() === null || loadingData()"
                 >
@@ -442,7 +442,7 @@ import { RubroService } from '../rubros/rubro.service';
                 <span>Gastos</span>
                 <button
                   type="button"
-                  class="btn btn-success btn-sm"
+                  class="btn btn-primary btn-sm"
                   (click)="openNewPlanForm('gasto')"
                   [disabled]="selectedPresupuestoId() === null || loadingData()"
                 >
@@ -730,7 +730,7 @@ import { RubroService } from '../rubros/rubro.service';
                 <span>Ahorro</span>
                 <button
                   type="button"
-                  class="btn btn-success btn-sm"
+                  class="btn btn-primary btn-sm"
                   (click)="openNewPlanForm('ahorro')"
                   [disabled]="selectedPresupuestoId() === null || loadingData()"
                 >
