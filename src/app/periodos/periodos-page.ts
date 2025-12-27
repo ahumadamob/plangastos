@@ -186,12 +186,12 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm me-2"
+                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              Ver transacciones
+                              <span aria-hidden="true" class="view-icon">👁</span>
                             </button>
                             <button
                               type="button"
@@ -464,12 +464,12 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm me-2"
+                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              Ver transacciones
+                              <span aria-hidden="true" class="view-icon">👁</span>
                             </button>
                             <button
                               type="button"
@@ -742,12 +742,12 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm me-2"
+                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
                             >
-                              Ver transacciones
+                              <span aria-hidden="true" class="view-icon">👁</span>
                             </button>
                             <button
                               type="button"
@@ -1000,6 +1000,20 @@ import { RubroService } from '../rubros/rubro.service';
       }
 
       .consolidate-icon {
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .view-btn {
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .view-icon {
         font-size: 1rem;
         line-height: 1;
       }
