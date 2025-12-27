@@ -1105,8 +1105,6 @@ export class PeriodosPage implements OnInit {
 
   protected closeNewPlanForm(): void {
     this.newPlanCategory.set(null);
-    this.newPlanStatusMessage.set('');
-    this.newPlanErrorMessage.set('');
     this.newPlanForm.reset({
       presupuesto_id: this.selectedPresupuestoId(),
       rubro_id: null,
@@ -1135,7 +1133,7 @@ export class PeriodosPage implements OnInit {
         }
 
         this.newPlanStatusMessage.set(response.message || 'Partida planificada creada correctamente.');
-        this.prepareNewPlanForm();
+        this.closeNewPlanForm();
         this.loadData();
       },
       error: () => {
