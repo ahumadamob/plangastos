@@ -186,7 +186,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
+                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
@@ -464,7 +464,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
+                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
@@ -742,7 +742,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">
                             <button
                               type="button"
-                              class="btn btn-info btn-sm rounded-circle view-btn me-2"
+                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
                               (click)="toggleTransactionsView(item)"
                               aria-label="Ver transacciones"
                               title="Ver transacciones"
