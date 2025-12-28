@@ -113,11 +113,11 @@ import {
                   id="cuotas"
                   type="number"
                   class="form-control"
-                  formControlName="cuotas"
-                  [class.is-invalid]="isInvalid('cuotas')"
+                  formControlName="cuota"
+                  [class.is-invalid]="isInvalid('cuota')"
                   min="1"
                 />
-                <div class="invalid-feedback" *ngIf="isInvalid('cuotas')">
+                <div class="invalid-feedback" *ngIf="isInvalid('cuota')">
                   Ingresa un número de cuotas válido (1 o más).
                 </div>
               </div>
@@ -252,7 +252,7 @@ export class PartidasPlanificadasPage implements OnInit {
         validators: [Validators.required, Validators.min(0)],
       }),
       fechaObjetivo: this.fb.control<string | null>(null),
-      cuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
+      cuota: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
       cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
   }
@@ -282,7 +282,7 @@ export class PartidasPlanificadasPage implements OnInit {
       descripcion: partida.descripcion,
       montoComprometido: partida.montoComprometido,
       fechaObjetivo: partida.fechaObjetivo ?? null,
-      cuotas: partida.cuotas ?? null,
+      cuota: partida.cuota ?? null,
       cantidadCuotas: partida.cantidadCuotas ?? null,
     });
   }
@@ -383,7 +383,7 @@ export class PartidasPlanificadasPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
-      cuotas: null,
+      cuota: null,
       cantidadCuotas: null,
     });
   }

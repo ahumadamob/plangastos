@@ -435,11 +435,11 @@ import { RubroService } from '../rubros/rubro.service';
                         id="cuotas-ingreso"
                         type="number"
                         class="form-control"
-                        formControlName="cuotas"
-                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
                         min="1"
                       />
-                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
                         Ingresa un número de cuotas válido (1 o más).
                       </div>
                     </div>
@@ -754,11 +754,11 @@ import { RubroService } from '../rubros/rubro.service';
                         id="cuotas-gasto"
                         type="number"
                         class="form-control"
-                        formControlName="cuotas"
-                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
                         min="1"
                       />
-                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
                         Ingresa un número de cuotas válido (1 o más).
                       </div>
                     </div>
@@ -1073,11 +1073,11 @@ import { RubroService } from '../rubros/rubro.service';
                         id="cuotas-ahorro"
                         type="number"
                         class="form-control"
-                        formControlName="cuotas"
-                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
                         min="1"
                       />
-                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
                         Ingresa un número de cuotas válido (1 o más).
                       </div>
                     </div>
@@ -1310,7 +1310,7 @@ export class PeriodosPage implements OnInit {
       }),
       montoComprometido: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       fechaObjetivo: this.fb.control<string | null>(null),
-      cuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
+      cuota: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
       cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
   }
@@ -1398,11 +1398,11 @@ export class PeriodosPage implements OnInit {
   }
 
   protected getCuotasLabel(partida: PartidaPlanificada): string {
-    if (partida.cuotas === null || partida.cuotas === undefined || partida.cantidadCuotas === null || partida.cantidadCuotas === undefined) {
+    if (partida.cuota === null || partida.cuota === undefined || partida.cantidadCuotas === null || partida.cantidadCuotas === undefined) {
       return '—';
     }
 
-    return `${partida.cuotas} de ${partida.cantidadCuotas}`;
+    return `${partida.cuota} de ${partida.cantidadCuotas}`;
   }
 
   protected getRowClasses(partida: PartidaPlanificada): Record<string, boolean> {
@@ -1464,7 +1464,7 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
-      cuotas: null,
+      cuota: null,
       cantidadCuotas: null,
     });
   }
@@ -1588,7 +1588,7 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
-      cuotas: null,
+      cuota: null,
       cantidadCuotas: null,
     });
   }

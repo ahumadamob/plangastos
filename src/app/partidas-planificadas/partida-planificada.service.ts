@@ -32,7 +32,7 @@ export interface PartidaPlanificada {
   descripcion: string;
   montoComprometido: number;
   fechaObjetivo?: string | null;
-  cuotas?: number | null;
+  cuota?: number | null;
   cantidadCuotas?: number | null;
   consolidado?: boolean;
   transacciones?: PartidaPlanificadaTransaccion[];
@@ -46,7 +46,7 @@ export interface PartidaPlanificadaRequestDto {
   descripcion: string;
   montoComprometido: number | null;
   fechaObjetivo?: string | null;
-  cuotas?: number | null;
+  cuota?: number | null;
   cantidadCuotas?: number | null;
 }
 
