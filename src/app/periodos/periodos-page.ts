@@ -426,6 +426,34 @@ import { RubroService } from '../rubros/rubro.service';
                         formControlName="fechaObjetivo"
                       />
                     </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-ingreso" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-ingreso"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-ingreso" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-ingreso"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
+                    </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
                         Guardar partida
@@ -713,6 +741,34 @@ import { RubroService } from '../rubros/rubro.service';
                         class="form-control"
                         formControlName="fechaObjetivo"
                       />
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-gasto" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-gasto"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-gasto" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-gasto"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
                     </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
@@ -1002,6 +1058,34 @@ import { RubroService } from '../rubros/rubro.service';
                         formControlName="fechaObjetivo"
                       />
                     </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-ahorro" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-ahorro"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuotas')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-ahorro" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-ahorro"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
+                    </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
                         Guardar partida
@@ -1217,6 +1301,8 @@ export class PeriodosPage implements OnInit {
       }),
       montoComprometido: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       fechaObjetivo: this.fb.control<string | null>(null),
+      cuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
+      cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
   }
 
@@ -1361,6 +1447,8 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
+      cuotas: null,
+      cantidadCuotas: null,
     });
   }
 
@@ -1483,6 +1571,8 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
+      cuotas: null,
+      cantidadCuotas: null,
     });
   }
 

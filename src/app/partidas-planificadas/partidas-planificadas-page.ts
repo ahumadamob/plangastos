@@ -107,6 +107,36 @@ import {
                 />
               </div>
 
+              <div class="col-12 col-md-6">
+                <label for="cuotas" class="form-label">Cuotas</label>
+                <input
+                  id="cuotas"
+                  type="number"
+                  class="form-control"
+                  formControlName="cuotas"
+                  [class.is-invalid]="isInvalid('cuotas')"
+                  min="1"
+                />
+                <div class="invalid-feedback" *ngIf="isInvalid('cuotas')">
+                  Ingresa un número de cuotas válido (1 o más).
+                </div>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="cantidadCuotas" class="form-label">Cantidad de cuotas</label>
+                <input
+                  id="cantidadCuotas"
+                  type="number"
+                  class="form-control"
+                  formControlName="cantidadCuotas"
+                  [class.is-invalid]="isInvalid('cantidadCuotas')"
+                  min="1"
+                />
+                <div class="invalid-feedback" *ngIf="isInvalid('cantidadCuotas')">
+                  Ingresa una cantidad de cuotas válida (1 o más).
+                </div>
+              </div>
+
               <div class="col-12 d-flex gap-2">
                 <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
                   {{ editingPartidaId() ? 'Guardar cambios' : 'Crear partida' }}
@@ -222,6 +252,8 @@ export class PartidasPlanificadasPage implements OnInit {
         validators: [Validators.required, Validators.min(0)],
       }),
       fechaObjetivo: this.fb.control<string | null>(null),
+      cuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
+      cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
   }
 
@@ -250,6 +282,8 @@ export class PartidasPlanificadasPage implements OnInit {
       descripcion: partida.descripcion,
       montoComprometido: partida.montoComprometido,
       fechaObjetivo: partida.fechaObjetivo ?? null,
+      cuotas: partida.cuotas ?? null,
+      cantidadCuotas: partida.cantidadCuotas ?? null,
     });
   }
 
@@ -349,6 +383,8 @@ export class PartidasPlanificadasPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
+      cuotas: null,
+      cantidadCuotas: null,
     });
   }
 
