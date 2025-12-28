@@ -45,7 +45,7 @@ import { RubroService } from '../rubros/rubro.service';
         <ng-container *ngIf="selectedPresupuestoId() !== null">
           <ng-template #transactionsList let-partida>
             <tr *ngIf="viewingTransactionsPartidaId() === partida.id">
-              <td colspan="6">
+              <td colspan="7">
                 <div class="border rounded p-3 bg-light">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <div>
@@ -186,6 +186,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -197,6 +198,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -230,7 +232,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -344,6 +346,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                       </tr>
@@ -502,6 +505,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -513,6 +517,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -546,7 +551,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -660,6 +665,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                       </tr>
@@ -818,6 +824,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -829,6 +836,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -862,7 +870,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -976,6 +984,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th colspan="2" class="text-end">Total</th>
                         <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
                         <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                       </tr>
@@ -1386,6 +1395,14 @@ export class PeriodosPage implements OnInit {
       this.getTotalTransacciones(this.gastos()) -
       this.getTotalTransacciones(this.ahorro())
     );
+  }
+
+  protected getCuotasLabel(partida: PartidaPlanificada): string {
+    if (partida.cuotas === null || partida.cuotas === undefined || partida.cantidadCuotas === null || partida.cantidadCuotas === undefined) {
+      return '—';
+    }
+
+    return `${partida.cuotas} de ${partida.cantidadCuotas}`;
   }
 
   protected getRowClasses(partida: PartidaPlanificada): Record<string, boolean> {
