@@ -223,7 +223,8 @@ import { RubroService } from '../rubros/rubro.service';
                                 type="button"
                                 class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
                                 (click)="confirmConsolidatePartida(item)"
-                                [disabled]="!canConsolidate(item) || consolidatingPartidaId() === item.id"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
                                 aria-label="Consolidar partida"
                                 title="Consolidar partida"
                               >
@@ -554,7 +555,8 @@ import { RubroService } from '../rubros/rubro.service';
                                 type="button"
                                 class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
                                 (click)="confirmConsolidatePartida(item)"
-                                [disabled]="!canConsolidate(item) || consolidatingPartidaId() === item.id"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
                                 aria-label="Consolidar partida"
                                 title="Consolidar partida"
                               >
@@ -885,7 +887,8 @@ import { RubroService } from '../rubros/rubro.service';
                                 type="button"
                                 class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
                                 (click)="confirmConsolidatePartida(item)"
-                                [disabled]="!canConsolidate(item) || consolidatingPartidaId() === item.id"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
                                 aria-label="Consolidar partida"
                                 title="Consolidar partida"
                               >
