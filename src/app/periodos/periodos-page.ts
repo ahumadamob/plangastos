@@ -45,7 +45,7 @@ import { RubroService } from '../rubros/rubro.service';
         <ng-container *ngIf="selectedPresupuestoId() !== null">
           <ng-template #transactionsList let-partida>
             <tr *ngIf="viewingTransactionsPartidaId() === partida.id">
-              <td colspan="6">
+              <td colspan="7">
                 <div class="border rounded p-3 bg-light">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <div>
@@ -186,6 +186,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -197,6 +198,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -230,7 +232,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -346,6 +348,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                       </tr>
                     </tfoot>
                   </table>
@@ -426,6 +429,34 @@ import { RubroService } from '../rubros/rubro.service';
                         formControlName="fechaObjetivo"
                       />
                     </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-ingreso" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-ingreso"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-ingreso" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-ingreso"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
+                    </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
                         Guardar partida
@@ -474,6 +505,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -485,6 +517,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -518,7 +551,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -634,6 +667,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                       </tr>
                     </tfoot>
                   </table>
@@ -714,6 +748,34 @@ import { RubroService } from '../rubros/rubro.service';
                         formControlName="fechaObjetivo"
                       />
                     </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-gasto" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-gasto"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-gasto" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-gasto"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
+                    </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
                         Guardar partida
@@ -762,6 +824,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">Monto comprometido</th>
                         <th class="text-end">Monto transacciones</th>
                         <th>Fecha objetivo</th>
+                        <th>Cuotas</th>
                         <th class="text-end">Acciones</th>
                       </tr>
                     </thead>
@@ -773,6 +836,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
                           <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+                          <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
                             <button
                               type="button"
@@ -806,7 +870,7 @@ import { RubroService } from '../rubros/rubro.service';
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
                         <tr *ngIf="inlineFormPartidaId() === item.id">
-                          <td colspan="6">
+                          <td colspan="7">
                             <div class="border rounded p-3">
                               <div class="d-flex justify-content-between align-items-center mb-2">
                                 <div>
@@ -922,6 +986,7 @@ import { RubroService } from '../rubros/rubro.service';
                         <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                       </tr>
                     </tfoot>
                   </table>
@@ -1001,6 +1066,34 @@ import { RubroService } from '../rubros/rubro.service';
                         class="form-control"
                         formControlName="fechaObjetivo"
                       />
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cuotas-ahorro" class="form-label">Cuotas</label>
+                      <input
+                        id="cuotas-ahorro"
+                        type="number"
+                        class="form-control"
+                        formControlName="cuota"
+                        [class.is-invalid]="isNewPlanInvalid('cuota')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
+                        Ingresa un número de cuotas válido (1 o más).
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-2">
+                      <label for="cantidad-cuotas-ahorro" class="form-label">Cantidad de cuotas</label>
+                      <input
+                        id="cantidad-cuotas-ahorro"
+                        type="number"
+                        class="form-control"
+                        formControlName="cantidadCuotas"
+                        [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                        min="1"
+                      />
+                      <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                        Ingresa una cantidad de cuotas válida (1 o más).
+                      </div>
                     </div>
                     <div class="col-12 d-flex gap-2">
                       <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">
@@ -1217,6 +1310,8 @@ export class PeriodosPage implements OnInit {
       }),
       montoComprometido: this.fb.control<number | null>(null, { validators: [Validators.required, Validators.min(0)] }),
       fechaObjetivo: this.fb.control<string | null>(null),
+      cuota: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
+      cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
   }
 
@@ -1302,6 +1397,14 @@ export class PeriodosPage implements OnInit {
     );
   }
 
+  protected getCuotasLabel(partida: PartidaPlanificada): string {
+    if (partida.cuota === null || partida.cuota === undefined || partida.cantidadCuotas === null || partida.cantidadCuotas === undefined) {
+      return '—';
+    }
+
+    return `${partida.cuota} de ${partida.cantidadCuotas}`;
+  }
+
   protected getRowClasses(partida: PartidaPlanificada): Record<string, boolean> {
     const status = this.getRowStatus(partida);
     return {
@@ -1361,6 +1464,8 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
+      cuota: null,
+      cantidadCuotas: null,
     });
   }
 
@@ -1483,6 +1588,8 @@ export class PeriodosPage implements OnInit {
       descripcion: '',
       montoComprometido: null,
       fechaObjetivo: null,
+      cuota: null,
+      cantidadCuotas: null,
     });
   }
 

@@ -32,6 +32,9 @@ export interface PartidaPlanificada {
   descripcion: string;
   montoComprometido: number;
   fechaObjetivo?: string | null;
+  cuota?: number | null;
+  cantidadCuotas?: number | null;
+  consolidado?: boolean;
   transacciones?: PartidaPlanificadaTransaccion[];
   createdAt: string;
   updatedAt: string;
@@ -43,6 +46,8 @@ export interface PartidaPlanificadaRequestDto {
   descripcion: string;
   montoComprometido: number | null;
   fechaObjetivo?: string | null;
+  cuota?: number | null;
+  cantidadCuotas?: number | null;
 }
 
 @Injectable({
@@ -91,7 +96,7 @@ export class PartidaPlanificadaService {
   }
 
   update(id: number, payload: PartidaPlanificadaRequestDto): Observable<ApiResponse<PartidaPlanificada>> {
-    return this.http.put<ApiResponse<PartidaPlanificada>>(
+    return this.http.patch<ApiResponse<PartidaPlanificada>>(
       `${this.baseUrl}/partida-planificada/${id}`,
       payload
     );
