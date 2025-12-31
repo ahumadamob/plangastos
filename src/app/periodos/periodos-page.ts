@@ -217,6 +217,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleNewTransactionForm(item)"
                                 aria-label="Ingresar transacción"
                                 title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
                               >
                                 <span aria-hidden="true" class="transaction-icon">⇄</span>
                               </button>
@@ -551,6 +552,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleNewTransactionForm(item)"
                                 aria-label="Ingresar transacción"
                                 title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
                               >
                                 <span aria-hidden="true" class="transaction-icon">⇄</span>
                               </button>
@@ -885,6 +887,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleNewTransactionForm(item)"
                                 aria-label="Ingresar transacción"
                                 title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
                               >
                                 <span aria-hidden="true" class="transaction-icon">⇄</span>
                               </button>
