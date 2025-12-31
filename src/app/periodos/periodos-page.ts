@@ -207,6 +207,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleTransactionsView(item)"
                                 aria-label="Ver transacciones"
                                 title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
                               >
                                 <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
                               </button>
@@ -235,6 +236,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
                                 (click)="confirmDeletePartida(item)"
                                 [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
                                 aria-label="Eliminar partida"
                                 title="Eliminar partida"
                               >
@@ -539,6 +541,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleTransactionsView(item)"
                                 aria-label="Ver transacciones"
                                 title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
                               >
                                 <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
                               </button>
@@ -567,6 +570,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
                                 (click)="confirmDeletePartida(item)"
                                 [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
                                 aria-label="Eliminar partida"
                                 title="Eliminar partida"
                               >
@@ -871,6 +875,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 (click)="toggleTransactionsView(item)"
                                 aria-label="Ver transacciones"
                                 title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
                               >
                                 <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
                               </button>
@@ -899,6 +904,7 @@ import { RubroService } from '../rubros/rubro.service';
                                 class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
                                 (click)="confirmDeletePartida(item)"
                                 [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
                                 aria-label="Eliminar partida"
                                 title="Eliminar partida"
                               >
@@ -1778,7 +1784,7 @@ export class PeriodosPage implements OnInit {
     return transacciones / comprometido >= 0.8;
   }
 
-  private hasTransacciones(partida: PartidaPlanificada): boolean {
+  protected hasTransacciones(partida: PartidaPlanificada): boolean {
     return (partida.transacciones?.length ?? 0) > 0;
   }
 
