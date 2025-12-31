@@ -58,6 +58,26 @@ export class PartidaPlanificadaService {
 
   constructor(private readonly http: HttpClient) {}
 
+  private toNumberOrNull(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    const numericValue = Number(value);
+    return Number.isNaN(numericValue) ? null : numericValue;
+  }
+
+  private normalizePayload(payload: PartidaPlanificadaRequestDto): PartidaPlanificadaRequestDto {
+    return {
+      ...payload,
+      presupuesto_id: this.toNumberOrNull(payload.presupuesto_id),
+      rubro_id: this.toNumberOrNull(payload.rubro_id),
+      montoComprometido: this.toNumberOrNull(payload.montoComprometido),
+      cuota: this.toNumberOrNull(payload.cuota),
+      cantidadCuotas: this.toNumberOrNull(payload.cantidadCuotas),
+    };
+  }
+
   getAll(): Observable<ApiResponse<PartidaPlanificada[]>> {
     return this.http.get<ApiResponse<PartidaPlanificada[]>>(`${this.baseUrl}/partida-planificada`);
   }
@@ -89,16 +109,18 @@ export class PartidaPlanificadaService {
   }
 
   create(payload: PartidaPlanificadaRequestDto): Observable<ApiResponse<PartidaPlanificada>> {
+    const normalizedPayload = this.normalizePayload(payload);
     return this.http.post<ApiResponse<PartidaPlanificada>>(
       `${this.baseUrl}/partida-planificada`,
-      payload
+      normalizedPayload
     );
   }
 
   update(id: number, payload: PartidaPlanificadaRequestDto): Observable<ApiResponse<PartidaPlanificada>> {
+    const normalizedPayload = this.normalizePayload(payload);
     return this.http.patch<ApiResponse<PartidaPlanificada>>(
       `${this.baseUrl}/partida-planificada/${id}`,
-      payload
+      normalizedPayload
     );
   }
 

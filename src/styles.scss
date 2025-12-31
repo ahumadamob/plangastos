@@ -1,6 +1,134 @@
+@use "bootswatch/dist/flatly/variables" as flatly;
+@use "bootstrap/scss/bootstrap" as bs with (
+  $white: flatly.$white,
+  $gray-100: flatly.$gray-100,
+  $gray-200: flatly.$gray-200,
+  $gray-300: flatly.$gray-300,
+  $gray-400: flatly.$gray-400,
+  $gray-500: flatly.$gray-500,
+  $gray-600: flatly.$gray-600,
+  $gray-700: flatly.$gray-700,
+  $gray-800: flatly.$gray-800,
+  $gray-900: flatly.$gray-900,
+  $black: flatly.$black,
+  $blue: flatly.$blue,
+  $indigo: flatly.$indigo,
+  $purple: flatly.$purple,
+  $pink: flatly.$pink,
+  $red: flatly.$red,
+  $orange: flatly.$orange,
+  $yellow: flatly.$yellow,
+  $green: flatly.$green,
+  $teal: flatly.$teal,
+  $cyan: flatly.$cyan,
+  $primary: flatly.$primary,
+  $secondary: flatly.$secondary,
+  $success: flatly.$success,
+  $info: flatly.$info,
+  $warning: flatly.$warning,
+  $danger: flatly.$danger,
+  $light: flatly.$light,
+  $dark: flatly.$dark,
+  $min-contrast-ratio: flatly.$min-contrast-ratio,
+  $link-color: flatly.$link-color,
+  $font-family-sans-serif: flatly.$font-family-sans-serif,
+  $h1-font-size: flatly.$h1-font-size,
+  $h2-font-size: flatly.$h2-font-size,
+  $h3-font-size: flatly.$h3-font-size,
+  $table-color: flatly.$table-color,
+  $table-bg-scale: flatly.$table-bg-scale,
+  $dropdown-border-color: flatly.$dropdown-border-color,
+  $dropdown-link-color: flatly.$dropdown-link-color,
+  $dropdown-link-hover-color: flatly.$dropdown-link-hover-color,
+  $dropdown-link-hover-bg: flatly.$dropdown-link-hover-bg,
+  $nav-link-padding-y: flatly.$nav-link-padding-y,
+  $nav-link-padding-x: flatly.$nav-link-padding-x,
+  $nav-link-disabled-color: flatly.$nav-link-disabled-color,
+  $nav-tabs-border-color: flatly.$nav-tabs-border-color,
+  $nav-tabs-link-hover-border-color: flatly.$nav-tabs-link-hover-border-color,
+  $nav-tabs-link-active-color: flatly.$nav-tabs-link-active-color,
+  $nav-tabs-link-active-border-color: flatly.$nav-tabs-link-active-border-color,
+  $navbar-padding-y: flatly.$navbar-padding-y,
+  $navbar-dark-color: flatly.$navbar-dark-color,
+  $navbar-dark-hover-color: flatly.$navbar-dark-hover-color,
+  $navbar-dark-active-color: flatly.$navbar-dark-active-color,
+  $navbar-dark-brand-color: flatly.$navbar-dark-brand-color,
+  $navbar-dark-brand-hover-color: flatly.$navbar-dark-brand-hover-color,
+  $pagination-color: flatly.$pagination-color,
+  $pagination-bg: flatly.$pagination-bg,
+  $pagination-border-width: flatly.$pagination-border-width,
+  $pagination-border-color: flatly.$pagination-border-color,
+  $pagination-hover-color: flatly.$pagination-hover-color,
+  $pagination-hover-bg: flatly.$pagination-hover-bg,
+  $pagination-hover-border-color: flatly.$pagination-hover-border-color,
+  $pagination-active-bg: flatly.$pagination-active-bg,
+  $pagination-active-border-color: flatly.$pagination-active-border-color,
+  $pagination-disabled-color: flatly.$pagination-disabled-color,
+  $pagination-disabled-bg: flatly.$pagination-disabled-bg,
+  $pagination-disabled-border-color: flatly.$pagination-disabled-border-color,
+  $list-group-hover-bg: flatly.$list-group-hover-bg,
+  $list-group-disabled-bg: flatly.$list-group-disabled-bg,
+  $breadcrumb-padding-y: flatly.$breadcrumb-padding-y,
+  $breadcrumb-padding-x: flatly.$breadcrumb-padding-x,
+  $breadcrumb-border-radius: flatly.$breadcrumb-border-radius,
+  $btn-close-color: flatly.$btn-close-color,
+  $btn-close-opacity: flatly.$btn-close-opacity,
+  $btn-close-hover-opacity: flatly.$btn-close-hover-opacity
+);
+
 $web-font-path: false;
 
+@if $web-font-path {
+  @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap");
+}
+
+.pagination {
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+.badge {
+  &.bg-light {
+    color: flatly.$dark;
+  }
+}
+
+.alert {
+  color: bs.$white;
+  border: none;
+
+  a,
+  .alert-link {
+    color: bs.$white;
+    text-decoration: underline;
+  }
+
+  @each $color, $value in bs.$theme-colors {
+    &-#{$color} {
+      @if bs.$enable-gradients {
+        background: $value linear-gradient(180deg, mix(bs.$body-bg, $value, 15%), $value) repeat-x;
+      } @else {
+        background-color: $value;
+      }
+    }
+  }
+
+  &-light {
+    &,
+    a,
+    .alert-link {
+      color: bs.$body-color;
+    }
+  }
+}
+
+.modal,
+.toast,
+.offcanvas {
+  .btn-close {
+    background-image: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='#{bs.$black}'><path d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/></svg>"));
+  }
+}
+
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');
-@import "bootswatch/dist/flatly/variables";
-@import "bootstrap/scss/bootstrap";
-@import "bootswatch/dist/flatly/bootswatch";
