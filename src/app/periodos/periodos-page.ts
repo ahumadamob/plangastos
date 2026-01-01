@@ -117,7 +117,7 @@ import { RubroService } from '../rubros/rubro.service';
               </div>
             </div>
             <div class="col">
-              <div class="card text-dark bg-warning h-100" style="max-width: 20rem; width: 100%;">
+              <div class="card text-black bg-warning h-100" style="max-width: 20rem; width: 100%;">
                 <div class="card-header">Gastos</div>
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">

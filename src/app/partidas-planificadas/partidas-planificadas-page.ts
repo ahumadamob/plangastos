@@ -176,13 +176,27 @@ import {
                 <td>{{ partida.rubro.nombre }}</td>
                 <td class="text-end">{{ partida.montoComprometido | number : '1.2-2' }}</td>
                 <td>{{ partida.fechaObjetivo || '—' }}</td>
-                <td class="text-end d-flex gap-2 justify-content-end">
-                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="startEdit(partida)">
-                    Editar
-                  </button>
-                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(partida)">
-                    Eliminar
-                  </button>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2 justify-content-end">
+                    <button
+                      class="btn btn-primary btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="startEdit(partida)"
+                      aria-label="Editar partida"
+                      title="Editar partida"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="openDeleteModal(partida)"
+                      aria-label="Eliminar partida"
+                      title="Eliminar partida"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

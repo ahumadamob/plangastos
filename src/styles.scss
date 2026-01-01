@@ -131,4 +131,23 @@ $web-font-path: false;
   }
 }
 
+.icon-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn .fa,
+.icon-btn .fa-solid,
+.icon-btn .fa-regular,
+.icon-btn .fa-light,
+.icon-btn .fa-thin,
+.icon-btn .fa-duotone {
+  font-size: 1rem;
+  line-height: 1;
+}
+
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css');

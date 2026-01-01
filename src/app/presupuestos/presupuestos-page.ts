@@ -11,7 +11,7 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Presupuestos</span>
-        <button type="button" class="btn btn-success btn-sm" (click)="showNewForm()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
           Nuevo presupuesto
         </button>
       </div>
@@ -137,13 +137,27 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
                   <ng-template #sinVigencia>—</ng-template>
                 </td>
                 <td>{{ presupuesto.presupuestoOrigen?.nombre || '—' }}</td>
-                <td class="text-end d-flex gap-2 justify-content-end">
-                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="startEdit(presupuesto)">
-                    Editar
-                  </button>
-                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(presupuesto)">
-                    Eliminar
-                  </button>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2 justify-content-end">
+                    <button
+                      class="btn btn-primary btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="startEdit(presupuesto)"
+                      aria-label="Editar presupuesto"
+                      title="Editar presupuesto"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="openDeleteModal(presupuesto)"
+                      aria-label="Eliminar presupuesto"
+                      title="Eliminar presupuesto"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
