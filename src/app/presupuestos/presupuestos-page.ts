@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PlanPresupuestario } from '../plan-presupuestario/plan-presupuestario.service';
 import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presupuesto.service';
 
 @Component({
@@ -20,25 +19,6 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
         <div *ngIf="displayForm()" class="mb-4">
           <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
             <div class="row g-3">
-              <div class="col-12 col-md-6">
-                <label for="planPresupuestario" class="form-label">Plan presupuestario</label>
-                <select
-                  id="planPresupuestario"
-                  class="form-select"
-                  formControlName="planPresupuestario_id"
-                  [class.is-invalid]="isInvalid('planPresupuestario_id')"
-                  required
-                >
-                  <option [ngValue]="null" disabled>Selecciona un plan</option>
-                  <option *ngFor="let plan of planes()" [ngValue]="plan.id">
-                    {{ plan.nombre }}
-                  </option>
-                </select>
-                <div class="invalid-feedback" *ngIf="isInvalid('planPresupuestario_id')">
-                  Selecciona el plan presupuestario.
-                </div>
-              </div>
-
               <div class="col-12 col-md-6">
                 <label for="nombre" class="form-label">Nombre</label>
                 <input
@@ -87,7 +67,7 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
                     [ngValue]="presupuesto.id"
                     [disabled]="presupuesto.id === editingPresupuestoId()"
                   >
-                    {{ presupuesto.nombre }} ({{ presupuesto.plan.nombre }})
+                    {{ presupuesto.nombre }}
                   </option>
                 </select>
                 <div class="invalid-feedback" *ngIf="isInvalid('presupuestoOrigen_id')">
@@ -140,7 +120,6 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
             <thead>
               <tr>
                 <th>Nombre</th>
-                <th>Plan</th>
                 <th>Código</th>
                 <th>Vigencia</th>
                 <th>Origen</th>
@@ -150,7 +129,6 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
             <tbody>
               <tr *ngFor="let presupuesto of presupuestos()">
                 <td>{{ presupuesto.nombre }}</td>
-                <td>{{ presupuesto.plan.nombre }}</td>
                 <td>{{ presupuesto.codigo || '—' }}</td>
                 <td>
                   <span *ngIf="presupuesto.fechaDesde || presupuesto.fechaHasta; else sinVigencia">
@@ -207,7 +185,6 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
 })
 export class PresupuestosPage implements OnInit {
   protected readonly presupuestos = signal<Presupuesto[]>([]);
-  protected readonly planes = signal<PlanPresupuestario[]>([]);
   protected readonly loading = signal(false);
   protected readonly saving = signal(false);
   protected readonly statusMessage = signal('');
@@ -225,7 +202,6 @@ export class PresupuestosPage implements OnInit {
 
   constructor(private readonly fb: FormBuilder, private readonly presupuestoService: PresupuestoService) {
     this.form = this.fb.group({
-      planPresupuestario_id: this.fb.control<number | null>(null, { validators: [Validators.required] }),
       nombre: this.fb.control('', {
         validators: [Validators.required, Validators.minLength(3)],
         nonNullable: true,
@@ -238,7 +214,6 @@ export class PresupuestosPage implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadPlanes();
     this.loadPresupuestos();
   }
 
@@ -256,7 +231,6 @@ export class PresupuestosPage implements OnInit {
     this.displayForm.set(true);
     this.editingPresupuestoId.set(presupuesto.id);
     this.form.reset({
-      planPresupuestario_id: presupuesto.plan?.id ?? null,
       nombre: presupuesto.nombre,
       codigo: presupuesto.codigo ?? '',
       fechaDesde: presupuesto.fechaDesde ?? null,
@@ -356,7 +330,6 @@ export class PresupuestosPage implements OnInit {
 
   private resetForm(): void {
     this.form.reset({
-      planPresupuestario_id: null,
       nombre: '',
       codigo: '',
       fechaDesde: null,
@@ -374,13 +347,6 @@ export class PresupuestosPage implements OnInit {
         this.presupuestos.set([]);
       },
       complete: () => this.loading.set(false),
-    });
-  }
-
-  private loadPlanes(): void {
-    this.presupuestoService.getPlanesPresupuestarios().subscribe({
-      next: (response) => this.planes.set(response.data ?? []),
-      error: () => this.errorMessage.set('No se pudieron obtener los planes presupuestarios.'),
     });
   }
 }

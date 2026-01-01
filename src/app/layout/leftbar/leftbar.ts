@@ -49,14 +49,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       </a>
       <a
         class="list-group-item list-group-item-action"
-        routerLink="/planes-presupuestarios"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Planes presupuestarios
-      </a>
-      <a
-        class="list-group-item list-group-item-action"
         routerLink="/cuentas-financieras"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
