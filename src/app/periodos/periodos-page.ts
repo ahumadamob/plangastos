@@ -51,7 +51,7 @@ import { RubroService } from '../rubros/rubro.service';
                     <div>
                       <div class="fw-bold">Transacciones de: {{ partida.descripcion }}</div>
                       <div class="text-muted small">
-                        Total registrado: {{ getTransaccionesSum(partida) | number: '1.2-2' }}
+                        Total registrado: {{ getTransaccionesSum(partida) | number: '1.0-0' }}
                       </div>
                     </div>
                     <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeTransactionsView()">
@@ -78,7 +78,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td>{{ transaccion.descripcion }}</td>
                           <td>{{ transaccion.cuenta.nombre }}</td>
                           <td>{{ transaccion.fecha | date: 'dd/MM/yyyy' }}</td>
-                          <td class="text-end">{{ transaccion.monto | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ transaccion.monto | number: '1.0-0' }}</td>
                           <td>{{ transaccion.referenciaExterna || '—' }}</td>
                           <td class="text-end">
                             <button
@@ -107,11 +107,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -122,11 +122,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -137,11 +137,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -152,11 +152,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -195,8 +195,8 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
@@ -360,8 +360,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(ingresos()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -530,8 +530,8 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
@@ -695,8 +695,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(gastos()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -865,8 +865,8 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
@@ -1030,8 +1030,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(ahorro()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
