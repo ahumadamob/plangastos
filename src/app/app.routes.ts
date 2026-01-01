@@ -33,7 +33,16 @@ export const routes: Routes = [
     component: PartidasPlanificadasPage,
   },
   {
+    path: 'planes-presupuestarios',
+    redirectTo: 'presupuestos',
+    pathMatch: 'full',
+  },
+  {
     path: 'cuentas-financieras',
     component: CuentasFinancierasPage,
+  },
+  {
+    path: '**',
+    redirectTo: 'periodos',
   },
 ];
