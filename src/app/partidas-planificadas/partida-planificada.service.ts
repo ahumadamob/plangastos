@@ -124,6 +124,12 @@ export class PartidaPlanificadaService {
     );
   }
 
+  consolidate(id: number): Observable<ApiResponse<PartidaPlanificada>> {
+    return this.http.patch<ApiResponse<PartidaPlanificada>>(`${this.baseUrl}/partida-planificada/${id}`, {
+      consolidado: true,
+    });
+  }
+
   delete(id: number): Observable<ApiResponse<unknown>> {
     return this.http.delete<ApiResponse<unknown>>(`${this.baseUrl}/partida-planificada/${id}`);
   }

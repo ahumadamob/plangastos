@@ -51,7 +51,7 @@ import { RubroService } from '../rubros/rubro.service';
                     <div>
                       <div class="fw-bold">Transacciones de: {{ partida.descripcion }}</div>
                       <div class="text-muted small">
-                        Total registrado: {{ getTransaccionesSum(partida) | number: '1.2-2' }}
+                        Total registrado: {{ getTransaccionesSum(partida) | number: '1.0-0' }}
                       </div>
                     </div>
                     <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeTransactionsView()">
@@ -78,7 +78,7 @@ import { RubroService } from '../rubros/rubro.service';
                           <td>{{ transaccion.descripcion }}</td>
                           <td>{{ transaccion.cuenta.nombre }}</td>
                           <td>{{ transaccion.fecha | date: 'dd/MM/yyyy' }}</td>
-                          <td class="text-end">{{ transaccion.monto | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ transaccion.monto | number: '1.0-0' }}</td>
                           <td>{{ transaccion.referenciaExterna || '—' }}</td>
                           <td class="text-end">
                             <button
@@ -107,11 +107,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -122,11 +122,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -137,11 +137,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -152,11 +152,11 @@ import { RubroService } from '../rubros/rubro.service';
                 <div class="card-body">
                   <div class="d-flex align-items-baseline">
                     <span>Comprometido</span>
-                    <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.0-0' }}</strong>
                   </div>
                   <div class="d-flex align-items-baseline">
                     <span>Pagado</span>
-                    <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.2-2' }}</strong>
+                    <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.0-0' }}</strong>
                   </div>
                 </div>
               </div>
@@ -195,39 +195,55 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
-                            <button
-                              type="button"
-                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
-                              (click)="toggleTransactionsView(item)"
-                              aria-label="Ver transacciones"
-                              title="Ver transacciones"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
-                              (click)="toggleNewTransactionForm(item)"
-                              aria-label="Ingresar transacción"
-                              title="Ingresar transacción"
-                            >
-                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
-                              (click)="confirmDeletePartida(item)"
-                              [disabled]="deletingPartidaId() === item.id"
-                              aria-label="Eliminar partida"
-                              title="Eliminar partida"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
-                            </button>
+                            <div class="d-inline-flex gap-2">
+                              <button
+                                type="button"
+                                class="btn btn-light btn-sm rounded-circle icon-btn view-btn"
+                                (click)="toggleTransactionsView(item)"
+                                aria-label="Ver transacciones"
+                                title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm rounded-circle icon-btn transaction-btn"
+                                (click)="toggleNewTransactionForm(item)"
+                                aria-label="Ingresar transacción"
+                                title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
+                              >
+                                <span aria-hidden="true" class="transaction-icon">⇄</span>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
+                                (click)="confirmConsolidatePartida(item)"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
+                                aria-label="Consolidar partida"
+                                title="Consolidar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-circle-check consolidate-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
+                                (click)="confirmDeletePartida(item)"
+                                [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
+                                aria-label="Eliminar partida"
+                                title="Eliminar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
@@ -344,8 +360,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(ingresos()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(ingresos()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ingresos()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -514,39 +530,55 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
-                            <button
-                              type="button"
-                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
-                              (click)="toggleTransactionsView(item)"
-                              aria-label="Ver transacciones"
-                              title="Ver transacciones"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
-                              (click)="toggleNewTransactionForm(item)"
-                              aria-label="Ingresar transacción"
-                              title="Ingresar transacción"
-                            >
-                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
-                              (click)="confirmDeletePartida(item)"
-                              [disabled]="deletingPartidaId() === item.id"
-                              aria-label="Eliminar partida"
-                              title="Eliminar partida"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
-                            </button>
+                            <div class="d-inline-flex gap-2">
+                              <button
+                                type="button"
+                                class="btn btn-light btn-sm rounded-circle icon-btn view-btn"
+                                (click)="toggleTransactionsView(item)"
+                                aria-label="Ver transacciones"
+                                title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm rounded-circle icon-btn transaction-btn"
+                                (click)="toggleNewTransactionForm(item)"
+                                aria-label="Ingresar transacción"
+                                title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
+                              >
+                                <span aria-hidden="true" class="transaction-icon">⇄</span>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
+                                (click)="confirmConsolidatePartida(item)"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
+                                aria-label="Consolidar partida"
+                                title="Consolidar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-circle-check consolidate-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
+                                (click)="confirmDeletePartida(item)"
+                                [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
+                                aria-label="Eliminar partida"
+                                title="Eliminar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
@@ -663,8 +695,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(gastos()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(gastos()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(gastos()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -833,39 +865,55 @@ import { RubroService } from '../rubros/rubro.service';
                         <tr [ngClass]="getRowClasses(item)">
                           <td>{{ item.descripcion }}</td>
                           <td>{{ item.rubro.nombre }}</td>
-                          <td class="text-end">{{ item.montoComprometido | number: '1.2-2' }}</td>
-                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.2-2' }}</td>
+                          <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+                          <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
                           <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
                           <td>{{ getCuotasLabel(item) }}</td>
                           <td class="text-end">
-                            <button
-                              type="button"
-                              class="btn btn-light btn-sm rounded-circle view-btn me-2"
-                              (click)="toggleTransactionsView(item)"
-                              aria-label="Ver transacciones"
-                              title="Ver transacciones"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-primary btn-sm rounded-circle consolidate-btn"
-                              (click)="toggleNewTransactionForm(item)"
-                              aria-label="Ingresar transacción"
-                              title="Ingresar transacción"
-                            >
-                              <span aria-hidden="true" class="consolidate-icon">⇄</span>
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-danger btn-sm rounded-circle delete-btn ms-2"
-                              (click)="confirmDeletePartida(item)"
-                              [disabled]="deletingPartidaId() === item.id"
-                              aria-label="Eliminar partida"
-                              title="Eliminar partida"
-                            >
-                              <i aria-hidden="true" class="fa-solid fa-trash"></i>
-                            </button>
+                            <div class="d-inline-flex gap-2">
+                              <button
+                                type="button"
+                                class="btn btn-light btn-sm rounded-circle icon-btn view-btn"
+                                (click)="toggleTransactionsView(item)"
+                                aria-label="Ver transacciones"
+                                title="Ver transacciones"
+                                *ngIf="hasTransacciones(item)"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-primary btn-sm rounded-circle icon-btn transaction-btn"
+                                (click)="toggleNewTransactionForm(item)"
+                                aria-label="Ingresar transacción"
+                                title="Ingresar transacción"
+                                *ngIf="item.consolidado !== true"
+                              >
+                                <span aria-hidden="true" class="transaction-icon">⇄</span>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
+                                (click)="confirmConsolidatePartida(item)"
+                                *ngIf="canConsolidate(item)"
+                                [disabled]="consolidatingPartidaId() === item.id"
+                                aria-label="Consolidar partida"
+                                title="Consolidar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-circle-check consolidate-icon"></i>
+                              </button>
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
+                                (click)="confirmDeletePartida(item)"
+                                [disabled]="deletingPartidaId() === item.id"
+                                *ngIf="!hasTransacciones(item)"
+                                aria-label="Eliminar partida"
+                                title="Eliminar partida"
+                              >
+                                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                         <ng-container *ngTemplateOutlet="transactionsList; context: { $implicit: item }"></ng-container>
@@ -982,8 +1030,8 @@ import { RubroService } from '../rubros/rubro.service';
                     <tfoot>
                       <tr>
                         <th colspan="2" class="text-end">Total</th>
-                        <th class="text-end">{{ getTotal(ahorro()) | number: '1.2-2' }}</th>
-                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.2-2' }}</th>
+                        <th class="text-end">{{ getTotal(ahorro()) | number: '1.0-0' }}</th>
+                        <th class="text-end">{{ getTotalTransacciones(ahorro()) | number: '1.0-0' }}</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -1165,6 +1213,49 @@ import { RubroService } from '../rubros/rubro.service';
           </div>
           <div class="modal-backdrop fade show"></div>
         </ng-container>
+        <ng-container *ngIf="consolidateModalOpen()">
+          <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Consolidar partida</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    aria-label="Close"
+                    (click)="closeConsolidateModal()"
+                    [disabled]="consolidatingPartidaId() !== null"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-0">
+                    ¿Seguro que deseas consolidar este gasto
+                    <strong>{{ partidaToConsolidate()?.descripcion }}</strong>?
+                  </p>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="closeConsolidateModal()"
+                    [disabled]="consolidatingPartidaId() !== null"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-info"
+                    (click)="consolidatePartida()"
+                    [disabled]="consolidatingPartidaId() !== null"
+                  >
+                    Consolidar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-backdrop fade show"></div>
+        </ng-container>
         <ng-container *ngIf="deleteModalOpen()">
           <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
             <div class="modal-dialog" role="document">
@@ -1213,7 +1304,7 @@ import { RubroService } from '../rubros/rubro.service';
   `,
   styles: [
     `
-      .consolidate-btn {
+      .icon-btn {
         width: 2.25rem;
         height: 2.25rem;
         padding: 0;
@@ -1222,32 +1313,11 @@ import { RubroService } from '../rubros/rubro.service';
         justify-content: center;
       }
 
+      .view-icon,
+      .transaction-icon,
       .consolidate-icon {
         font-size: 1rem;
         line-height: 1;
-      }
-
-      .view-btn {
-        width: 2.25rem;
-        height: 2.25rem;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .view-icon {
-        font-size: 1rem;
-        line-height: 1;
-      }
-
-      .delete-btn {
-        width: 2.25rem;
-        height: 2.25rem;
-        padding: 0;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
       }
     `,
   ],
@@ -1266,6 +1336,9 @@ export class PeriodosPage implements OnInit {
   protected readonly deleteModalOpen = signal(false);
   protected readonly partidaToDelete = signal<PartidaPlanificada | null>(null);
   protected readonly deletingPartidaId = signal<number | null>(null);
+  protected readonly consolidateModalOpen = signal(false);
+  protected readonly partidaToConsolidate = signal<PartidaPlanificada | null>(null);
+  protected readonly consolidatingPartidaId = signal<number | null>(null);
   protected readonly cuentasFinancieras = signal<CuentaFinanciera[]>([]);
   protected readonly savingTransaction = signal(false);
   protected readonly inlineStatusMessage = signal('');
@@ -1440,6 +1513,58 @@ export class PeriodosPage implements OnInit {
     this.inlineStatusMessage.set('');
     this.inlineErrorMessage.set('');
     this.prepareInlineForm(partida);
+  }
+
+  protected canConsolidate(partida: PartidaPlanificada): boolean {
+    return this.hasTransacciones(partida) && partida.consolidado !== true;
+  }
+
+  protected confirmConsolidatePartida(partida: PartidaPlanificada): void {
+    if (!this.canConsolidate(partida)) {
+      return;
+    }
+
+    this.partidaToConsolidate.set(partida);
+    this.consolidateModalOpen.set(true);
+  }
+
+  protected closeConsolidateModal(): void {
+    if (this.consolidatingPartidaId() !== null) {
+      return;
+    }
+
+    this.consolidateModalOpen.set(false);
+    this.partidaToConsolidate.set(null);
+  }
+
+  protected consolidatePartida(): void {
+    const partida = this.partidaToConsolidate();
+    if (!partida) {
+      this.closeConsolidateModal();
+      return;
+    }
+
+    this.consolidatingPartidaId.set(partida.id);
+    this.errorMessage.set('');
+
+    this.partidaPlanificadaService.consolidate(partida.id).subscribe({
+      next: (response) => {
+        if (!response.success) {
+          this.errorMessage.set(response.message || 'No se pudo consolidar la partida planificada.');
+          this.consolidatingPartidaId.set(null);
+          return;
+        }
+
+        this.loadData();
+        this.consolidatingPartidaId.set(null);
+        this.consolidateModalOpen.set(false);
+        this.partidaToConsolidate.set(null);
+      },
+      error: () => {
+        this.errorMessage.set('No se pudo consolidar la partida planificada.');
+        this.consolidatingPartidaId.set(null);
+      },
+    });
   }
 
   protected closeInlineForm(): void {
@@ -1662,7 +1787,7 @@ export class PeriodosPage implements OnInit {
     return transacciones / comprometido >= 0.8;
   }
 
-  private hasTransacciones(partida: PartidaPlanificada): boolean {
+  protected hasTransacciones(partida: PartidaPlanificada): boolean {
     return (partida.transacciones?.length ?? 0) > 0;
   }
 
