@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PlanPresupuestario } from '../plan-presupuestario/plan-presupuestario.service';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -12,7 +11,6 @@ export interface ApiResponse<T> {
 
 export interface Presupuesto {
   id: number;
-  plan: PlanPresupuestario;
   nombre: string;
   codigo?: string | null;
   fechaDesde?: string | null;
@@ -23,7 +21,6 @@ export interface Presupuesto {
 }
 
 export interface PresupuestoRequestDto {
-  planPresupuestario_id: number | null;
   nombre: string;
   codigo?: string | null;
   fechaDesde?: string | null;
@@ -46,10 +43,6 @@ export class PresupuestoService {
 
   getAll(): Observable<ApiResponse<Presupuesto[]>> {
     return this.http.get<ApiResponse<Presupuesto[]>>(`${this.baseUrl}/presupuesto`);
-  }
-
-  getPlanesPresupuestarios(): Observable<ApiResponse<PlanPresupuestario[]>> {
-    return this.http.get<ApiResponse<PlanPresupuestario[]>>(`${this.baseUrl}/plan-presupuestario`);
   }
 
   create(payload: PresupuestoRequestDto): Observable<ApiResponse<Presupuesto>> {
