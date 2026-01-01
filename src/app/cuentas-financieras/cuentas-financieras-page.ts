@@ -11,7 +11,7 @@ import { CuentaFinancieraService, CuentaFinanciera, CuentaFinancieraRequestDto, 
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Cuentas financieras</span>
-        <button type="button" class="btn btn-success btn-sm" (click)="showNewForm()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
           Nueva cuenta
         </button>
       </div>

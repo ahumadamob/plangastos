@@ -11,7 +11,7 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Rubros</span>
-        <button type="button" class="btn btn-success btn-sm" (click)="showNewForm()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
           Nuevo Rubro
         </button>
       </div>

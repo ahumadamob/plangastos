@@ -11,7 +11,7 @@ import { PresupuestoService, Presupuesto, PresupuestoRequestDto } from './presup
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <span>Presupuestos</span>
-        <button type="button" class="btn btn-success btn-sm" (click)="showNewForm()">
+        <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
           Nuevo presupuesto
         </button>
       </div>
