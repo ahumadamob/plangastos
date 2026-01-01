@@ -167,13 +167,27 @@ import { CuentaFinancieraService, CuentaFinanciera, CuentaFinancieraRequestDto, 
                     {{ cuenta.activo ? 'Activa' : 'Inactiva' }}
                   </span>
                 </td>
-                <td class="text-end d-flex gap-2 justify-content-end">
-                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="startEdit(cuenta)">
-                    Editar
-                  </button>
-                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(cuenta)">
-                    Eliminar
-                  </button>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2 justify-content-end">
+                    <button
+                      class="btn btn-primary btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="startEdit(cuenta)"
+                      aria-label="Editar cuenta"
+                      title="Editar cuenta"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="openDeleteModal(cuenta)"
+                      aria-label="Eliminar cuenta"
+                      title="Eliminar cuenta"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

@@ -17,6 +17,14 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       </a>
       <a
         class="list-group-item list-group-item-action"
+        routerLink="/presupuestos"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        Presupuestos
+      </a>
+      <a
+        class="list-group-item list-group-item-action"
         routerLink="/rubros"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
@@ -30,14 +38,6 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         [routerLinkActiveOptions]="{ exact: true }"
       >
         Transacciones
-      </a>
-      <a
-        class="list-group-item list-group-item-action"
-        routerLink="/presupuestos"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Presupuestos
       </a>
       <a
         class="list-group-item list-group-item-action"

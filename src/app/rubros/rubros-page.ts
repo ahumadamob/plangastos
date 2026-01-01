@@ -109,9 +109,17 @@ import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './ru
                   </span>
                 </td>
                 <td class="text-end">
-                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(rubro)">
-                    Eliminar
-                  </button>
+                  <div class="d-inline-flex justify-content-end">
+                    <button
+                      class="btn btn-danger btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="openDeleteModal(rubro)"
+                      aria-label="Eliminar rubro"
+                      title="Eliminar rubro"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

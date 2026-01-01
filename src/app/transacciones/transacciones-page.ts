@@ -202,13 +202,27 @@ import { PartidaPlanificada } from '../partidas-planificadas/partida-planificada
                 <td>{{ transaccion.fecha }}</td>
                 <td class="text-end">{{ transaccion.monto | number : '1.2-2' }}</td>
                 <td>{{ transaccion.referenciaExterna || '—' }}</td>
-                <td class="text-end d-flex gap-2 justify-content-end">
-                  <button class="btn btn-outline-primary btn-sm" type="button" (click)="startEdit(transaccion)">
-                    Editar
-                  </button>
-                  <button class="btn btn-danger btn-sm" type="button" (click)="openDeleteModal(transaccion)">
-                    Eliminar
-                  </button>
+                <td class="text-end">
+                  <div class="d-inline-flex gap-2 justify-content-end">
+                    <button
+                      class="btn btn-primary btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="startEdit(transaccion)"
+                      aria-label="Editar transacción"
+                      title="Editar transacción"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-pen"></i>
+                    </button>
+                    <button
+                      class="btn btn-danger btn-sm rounded-circle icon-btn"
+                      type="button"
+                      (click)="openDeleteModal(transaccion)"
+                      aria-label="Eliminar transacción"
+                      title="Eliminar transacción"
+                    >
+                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
