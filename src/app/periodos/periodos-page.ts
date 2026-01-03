@@ -1685,7 +1685,7 @@ export class PeriodosPage implements OnInit {
     const naturalezaMap: Record<'ingreso' | 'gasto' | 'ahorro', string[]> = {
       ingreso: ['INGRESO'],
       gasto: ['GASTO', 'EGRESO'],
-      ahorro: ['AHORRO'],
+      ahorro: ['AHORRO', 'RESERVA_AHORRO'],
     };
 
     const allowedNaturalezas = naturalezaMap[category];
