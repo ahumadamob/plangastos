@@ -7,6 +7,7 @@ import {
   PartidaPlanificadaTransaccion,
   PartidaPlanificadaRequestDto,
   PartidaPlanificadaService,
+  ActualizarMontoComprometidoRequestDto,
 } from '../partidas-planificadas/partida-planificada.service';
 import { Rubro } from '../rubros/rubro.service';
 import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupuesto.service';
@@ -57,10 +58,15 @@ export class PeriodosPage implements OnInit {
   protected readonly newTransactionForm: FormGroup;
   protected readonly newPlanCategory = signal<PlanCategory | null>(null);
   protected readonly newPlanForm: FormGroup;
+  protected readonly updateMontoForm: FormGroup;
   protected readonly newPlanSaving = signal(false);
   protected readonly newPlanStatusMessage = signal('');
   protected readonly newPlanErrorMessage = signal('');
   protected readonly rubros = signal<Rubro[]>([]);
+  protected readonly updateMontoModalOpen = signal(false);
+  protected readonly partidaToUpdateMonto = signal<PartidaPlanificada | null>(null);
+  protected readonly updatingMontoPartidaId = signal<number | null>(null);
+  protected readonly updateMontoError = signal('');
   protected readonly newPlanTitles: Record<PlanCategory, string> = {
     ingreso: 'Nueva partida planificada de ingreso',
     gasto: 'Nueva partida planificada de gasto',
@@ -104,6 +110,16 @@ export class PeriodosPage implements OnInit {
       cuota: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
       cantidadCuotas: this.fb.control<number | null>(null, { validators: [Validators.min(1)] }),
     });
+
+    this.updateMontoForm = this.fb.group({
+      modo: this.fb.control<'valor' | 'porcentaje'>('valor', { nonNullable: true }),
+      montoComprometido: this.fb.control<number | null>(null, {
+        validators: [Validators.required, Validators.min(0)],
+      }),
+      porcentaje: this.fb.control<number | null>(null),
+    });
+
+    this.applyUpdateModeValidators('valor');
   }
 
   ngOnInit(): void {
@@ -290,6 +306,111 @@ export class PeriodosPage implements OnInit {
     this.prepareInlineForm(null);
     this.inlineStatusMessage.set('');
     this.inlineErrorMessage.set('');
+  }
+
+  protected openUpdateMontoModal(partida: PartidaPlanificada): void {
+    this.partidaToUpdateMonto.set(partida);
+    this.updateMontoModalOpen.set(true);
+    this.updateMontoError.set('');
+    this.updateMontoForm.reset({
+      modo: 'valor',
+      montoComprometido: partida.montoComprometido ?? null,
+      porcentaje: null,
+    });
+    this.applyUpdateModeValidators('valor');
+  }
+
+  protected closeUpdateMontoModal(): void {
+    if (this.updatingMontoPartidaId() !== null) {
+      return;
+    }
+
+    this.updateMontoModalOpen.set(false);
+    this.partidaToUpdateMonto.set(null);
+    this.updateMontoError.set('');
+    this.updateMontoForm.reset({
+      modo: 'valor',
+      montoComprometido: null,
+      porcentaje: null,
+    });
+    this.applyUpdateModeValidators('valor');
+  }
+
+  protected onUpdateModeChange(mode: 'valor' | 'porcentaje'): void {
+    this.updateMontoForm.patchValue({ modo: mode });
+    this.applyUpdateModeValidators(mode);
+  }
+
+  protected isPorcentajeMode(): boolean {
+    return this.updateMontoForm.get('modo')?.value === 'porcentaje';
+  }
+
+  protected isUpdateMontoInvalid(controlName: string): boolean {
+    const control = this.updateMontoForm.get(controlName);
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  protected submitUpdateMonto(): void {
+    const mode = this.updateMontoForm.get('modo')?.value as 'valor' | 'porcentaje';
+
+    if (this.updateMontoForm.invalid) {
+      this.updateMontoForm.markAllAsTouched();
+      return;
+    }
+
+    const partida = this.partidaToUpdateMonto();
+    if (!partida) {
+      this.closeUpdateMontoModal();
+      return;
+    }
+
+    const payload: ActualizarMontoComprometidoRequestDto =
+      mode === 'valor'
+        ? { montoComprometido: this.updateMontoForm.value.montoComprometido, solicitudValida: true }
+        : { porcentaje: this.updateMontoForm.value.porcentaje, solicitudValida: true };
+
+    this.updatingMontoPartidaId.set(partida.id);
+    this.updateMontoError.set('');
+
+    this.partidaPlanificadaService.updateMontoComprometido(partida.id, payload).subscribe({
+      next: (response) => {
+        if (!response.success) {
+          this.updateMontoError.set(
+            response.message || 'No se pudo actualizar el monto comprometido.'
+          );
+          this.updatingMontoPartidaId.set(null);
+          return;
+        }
+
+        this.loadData();
+        this.updatingMontoPartidaId.set(null);
+        this.closeUpdateMontoModal();
+      },
+      error: () => {
+        this.updateMontoError.set('No se pudo actualizar el monto comprometido.');
+        this.updatingMontoPartidaId.set(null);
+      },
+    });
+  }
+
+  private applyUpdateModeValidators(mode: 'valor' | 'porcentaje'): void {
+    const montoControl = this.updateMontoForm.get('montoComprometido');
+    const porcentajeControl = this.updateMontoForm.get('porcentaje');
+
+    if (!montoControl || !porcentajeControl) {
+      return;
+    }
+
+    if (mode === 'valor') {
+      montoControl.setValidators([Validators.required, Validators.min(0)]);
+      porcentajeControl.setValidators([]);
+    } else {
+      montoControl.setValidators([]);
+      porcentajeControl.setValidators([Validators.required, Validators.min(-100)]);
+    }
+
+    montoControl.updateValueAndValidity();
+    porcentajeControl.updateValueAndValidity();
   }
 
   protected openNewPlanForm(category: PlanCategory): void {

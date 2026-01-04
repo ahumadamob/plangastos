@@ -26,6 +26,7 @@ export class PlanCategoryCardComponent {
   @Input({ required: true }) getCuotasLabel!: (partida: PartidaPlanificada) => string;
   @Input() disableNewPlan = false;
   @Input() showNewPlan = false;
+  @Input() updatingMontoPartidaId: number | null = null;
   @Input() newPlanTemplate?: TemplateRef<any>;
   @Input() transactionsTemplate?: TemplateRef<any>;
   @Input() inlineFormTemplate?: TemplateRef<any>;
@@ -34,6 +35,7 @@ export class PlanCategoryCardComponent {
   @Output() toggleInlineForm = new EventEmitter<PartidaPlanificada>();
   @Output() consolidate = new EventEmitter<PartidaPlanificada>();
   @Output() delete = new EventEmitter<PartidaPlanificada>();
+  @Output() updateMontoComprometido = new EventEmitter<PartidaPlanificada>();
 
   protected readonly categoryLabels: Record<PlanCategory, string> = {
     ingreso: 'Ingresos',
@@ -71,5 +73,9 @@ export class PlanCategoryCardComponent {
 
   protected onDelete(item: PartidaPlanificada): void {
     this.delete.emit(item);
+  }
+
+  protected onUpdateMontoComprometido(item: PartidaPlanificada): void {
+    this.updateMontoComprometido.emit(item);
   }
 }
