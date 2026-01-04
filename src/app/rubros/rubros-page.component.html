@@ -1,0 +1,127 @@
+<app-crud-card
+  title="Rubros"
+  [headerActions]="headerActions"
+  [formTemplate]="formTemplate"
+  [contentTemplate]="contentTemplate"
+>
+</app-crud-card>
+
+<ng-template #headerActions>
+  <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
+    Nuevo Rubro
+  </button>
+</ng-template>
+
+<ng-template #formTemplate>
+  <div *ngIf="displayForm()" class="mb-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Nombre"
+            [control]="getControl('nombre')"
+            [required]="true"
+            [maxLength]="120"
+            [errorMessage]="nombreError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-select
+            label="Naturaleza"
+            [control]="getControl('naturalezaMovimiento_id')"
+            [options]="naturalezasOptions()"
+            placeholder="Selecciona una naturaleza"
+            [required]="true"
+            [errorMessage]="naturalezaError"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12">
+          <div class="form-check">
+            <input
+              id="activo"
+              type="checkbox"
+              class="form-check-input"
+              formControlName="activo"
+            />
+            <label for="activo" class="form-check-label">Activo</label>
+          </div>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
+            Crear rubro
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()" [disabled]="saving()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+    <hr />
+  </div>
+</ng-template>
+
+<ng-template #contentTemplate>
+  <div *ngIf="loading()" class="alert alert-info mb-3">Cargando rubros...</div>
+  <div *ngIf="statusMessage()" class="alert alert-success mb-3">{{ statusMessage() }}</div>
+  <div *ngIf="errorMessage()" class="alert alert-danger mb-3">{{ errorMessage() }}</div>
+  <div *ngIf="!loading() && rubros().length === 0" class="alert alert-secondary">
+    No hay rubros registrados todavía.
+  </div>
+
+  <div class="table-responsive" *ngIf="rubros().length > 0">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Naturaleza</th>
+          <th>Estado</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let rubro of rubros()">
+          <td>{{ rubro.nombre }}</td>
+          <td>
+            <span class="badge bg-secondary">{{ rubro.naturaleza }}</span>
+          </td>
+          <td>
+            <span class="badge" [class.bg-success]="rubro.activo" [class.bg-danger]="!rubro.activo">
+              {{ rubro.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex justify-content-end">
+              <button
+                class="btn btn-danger btn-sm rounded-circle icon-btn"
+                type="button"
+                (click)="openDeleteModal(rubro)"
+                aria-label="Eliminar rubro"
+                title="Eliminar rubro"
+              >
+                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #deleteRubroBody>
+  <p *ngIf="rubroToDelete()">¿Seguro que deseas eliminar el rubro "{{ rubroToDelete()?.nombre }}"?</p>
+</ng-template>
+
+<app-confirm-modal
+  [open]="deleteModalOpen()"
+  title="Eliminar rubro"
+  [bodyTemplate]="deleteRubroBody"
+  [loading]="loading()"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  (cancel)="closeDeleteModal()"
+  (confirm)="confirmDelete()"
+></app-confirm-modal>

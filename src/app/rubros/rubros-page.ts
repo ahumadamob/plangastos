@@ -1,161 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { CrudCardComponent } from '../shared/crud-card/crud-card.component';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { CatalogInputComponent } from '../shared/catalog-form/catalog-input.component';
+import { CatalogSelectComponent, CatalogOption } from '../shared/catalog-form/catalog-select.component';
 import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './rubro.service';
 
 @Component({
   selector: 'app-rubros-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <span>Rubros</span>
-        <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
-          Nuevo Rubro
-        </button>
-      </div>
-      <div class="card-body">
-        <div *ngIf="displayForm()" class="mb-4">
-          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-            <div class="row g-3">
-              <div class="col-12 col-md-6">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input
-                  id="nombre"
-                  type="text"
-                  class="form-control"
-                  formControlName="nombre"
-                  [class.is-invalid]="isInvalid('nombre')"
-                  autocomplete="off"
-                  maxlength="120"
-                  required
-                />
-                <div class="invalid-feedback" *ngIf="isInvalid('nombre')">
-                  El nombre es obligatorio y debe tener al menos 3 caracteres.
-                </div>
-              </div>
-
-              <div class="col-12 col-md-6">
-                <label for="naturaleza" class="form-label">Naturaleza</label>
-                <select
-                  id="naturaleza"
-                  class="form-select"
-                  formControlName="naturalezaMovimiento_id"
-                  [class.is-invalid]="isInvalid('naturalezaMovimiento_id')"
-                  required
-                >
-                  <option [ngValue]="null" disabled>Selecciona una naturaleza</option>
-                  <option *ngFor="let naturaleza of naturalezas()" [ngValue]="naturaleza.id">
-                    {{ naturaleza.descripcion }} ({{ naturaleza.codigo }})
-                  </option>
-                </select>
-                <div class="invalid-feedback" *ngIf="isInvalid('naturalezaMovimiento_id')">
-                  Selecciona la naturaleza del rubro.
-                </div>
-              </div>
-
-              <div class="col-12">
-                <div class="form-check">
-                  <input
-                    id="activo"
-                    type="checkbox"
-                    class="form-check-input"
-                    formControlName="activo"
-                  />
-                  <label for="activo" class="form-check-label">Activo</label>
-                </div>
-              </div>
-
-              <div class="col-12 d-flex gap-2">
-                <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
-                  Crear rubro
-                </button>
-                <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()" [disabled]="saving()">
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </form>
-          <hr />
-        </div>
-
-        <div *ngIf="loading()" class="alert alert-info mb-3">Cargando rubros...</div>
-        <div *ngIf="statusMessage()" class="alert alert-success mb-3">{{ statusMessage() }}</div>
-        <div *ngIf="errorMessage()" class="alert alert-danger mb-3">{{ errorMessage() }}</div>
-        <div *ngIf="!loading() && rubros().length === 0" class="alert alert-secondary">
-          No hay rubros registrados todavía.
-        </div>
-
-        <div class="table-responsive" *ngIf="rubros().length > 0">
-          <table class="table table-hover align-middle">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Naturaleza</th>
-                <th>Estado</th>
-                <th class="text-end">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let rubro of rubros()">
-                <td>{{ rubro.nombre }}</td>
-                <td>
-                  <span class="badge bg-secondary">{{ rubro.naturaleza }}</span>
-                </td>
-                <td>
-                  <span class="badge" [class.bg-success]="rubro.activo" [class.bg-danger]="!rubro.activo">
-                    {{ rubro.activo ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <div class="d-inline-flex justify-content-end">
-                    <button
-                      class="btn btn-danger btn-sm rounded-circle icon-btn"
-                      type="button"
-                      (click)="openDeleteModal(rubro)"
-                      aria-label="Eliminar rubro"
-                      title="Eliminar rubro"
-                    >
-                      <i aria-hidden="true" class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div
-      class="modal fade show d-block"
-      tabindex="-1"
-      role="dialog"
-      *ngIf="deleteModalOpen()"
-      style="background-color: rgba(0, 0, 0, 0.5);"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Eliminar rubro</h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="closeDeleteModal()"></button>
-          </div>
-          <div class="modal-body">
-            <p *ngIf="rubroToDelete()">¿Seguro que deseas eliminar el rubro "{{ rubroToDelete()?.nombre }}"?</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closeDeleteModal()">
-              Cancelar
-            </button>
-            <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="loading()">
-              Eliminar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CrudCardComponent,
+    ConfirmModalComponent,
+    CatalogInputComponent,
+    CatalogSelectComponent,
+  ],
+  templateUrl: './rubros-page.component.html',
+  styleUrls: ['./rubros-page.component.scss'],
 })
 export class RubrosPage implements OnInit {
   protected readonly rubros = signal<Rubro[]>([]);
@@ -167,6 +31,8 @@ export class RubrosPage implements OnInit {
   protected readonly displayForm = signal(false);
   protected readonly deleteModalOpen = signal(false);
   protected readonly rubroToDelete = signal<Rubro | null>(null);
+  protected readonly nombreError = 'El nombre es obligatorio y debe tener al menos 3 caracteres.';
+  protected readonly naturalezaError = 'Selecciona la naturaleza del rubro.';
 
   protected readonly form: FormGroup;
 
@@ -206,9 +72,8 @@ export class RubrosPage implements OnInit {
     });
   }
 
-  protected isInvalid(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+  protected getControl(controlName: string): FormControl {
+    return this.form.get(controlName) as FormControl;
   }
 
   protected onSubmit(): void {
@@ -277,6 +142,13 @@ export class RubrosPage implements OnInit {
     this.statusMessage.set('');
     this.errorMessage.set('');
     this.loadRubros();
+  }
+
+  protected naturalezasOptions(): CatalogOption<number>[] {
+    return this.naturalezas().map((naturaleza) => ({
+      label: `${naturaleza.descripcion} (${naturaleza.codigo})`,
+      value: naturaleza.id,
+    }));
   }
 
   private loadRubros(): void {

@@ -1,0 +1,151 @@
+<app-crud-card
+  title="Presupuestos"
+  [headerActions]="headerActions"
+  [formTemplate]="formTemplate"
+  [contentTemplate]="contentTemplate"
+>
+</app-crud-card>
+
+<ng-template #headerActions>
+  <button type="button" class="btn btn-primary btn-sm" (click)="showNewForm()">
+    Nuevo presupuesto
+  </button>
+</ng-template>
+
+<ng-template #formTemplate>
+  <div *ngIf="displayForm()" class="mb-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Nombre"
+            [control]="getControl('nombre')"
+            [required]="true"
+            [maxLength]="150"
+            [errorMessage]="nombreError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Código"
+            [control]="getControl('codigo')"
+            placeholder="Opcional"
+            [maxLength]="50"
+            [errorMessage]="codigoError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-select
+            label="Presupuesto de origen"
+            [control]="getControl('presupuestoOrigen_id')"
+            [options]="origenesOptions()"
+            [errorMessage]="origenError"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Fecha desde"
+            [control]="getControl('fechaDesde')"
+            type="date"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Fecha hasta"
+            [control]="getControl('fechaHasta')"
+            type="date"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
+            {{ editingPresupuestoId() ? 'Guardar cambios' : 'Crear presupuesto' }}
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()" [disabled]="saving()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+    <hr />
+  </div>
+</ng-template>
+
+<ng-template #contentTemplate>
+  <div *ngIf="loading()" class="alert alert-info mb-3">Cargando presupuestos...</div>
+  <div *ngIf="statusMessage()" class="alert alert-success mb-3">{{ statusMessage() }}</div>
+  <div *ngIf="errorMessage()" class="alert alert-danger mb-3">{{ errorMessage() }}</div>
+  <div *ngIf="!loading() && presupuestos().length === 0" class="alert alert-secondary">
+    No hay presupuestos registrados todavía.
+  </div>
+
+  <div class="table-responsive" *ngIf="presupuestos().length > 0">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Código</th>
+          <th>Vigencia</th>
+          <th>Origen</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let presupuesto of presupuestos()">
+          <td>{{ presupuesto.nombre }}</td>
+          <td>{{ presupuesto.codigo || '—' }}</td>
+          <td>
+            <span *ngIf="presupuesto.fechaDesde || presupuesto.fechaHasta; else sinVigencia">
+              {{ presupuesto.fechaDesde || '—' }} - {{ presupuesto.fechaHasta || '—' }}
+            </span>
+            <ng-template #sinVigencia>—</ng-template>
+          </td>
+          <td>{{ presupuesto.presupuestoOrigen?.nombre || '—' }}</td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-2 justify-content-end">
+              <button
+                class="btn btn-primary btn-sm rounded-circle icon-btn"
+                type="button"
+                (click)="startEdit(presupuesto)"
+                aria-label="Editar presupuesto"
+                title="Editar presupuesto"
+              >
+                <i aria-hidden="true" class="fa-solid fa-pen"></i>
+              </button>
+              <button
+                class="btn btn-danger btn-sm rounded-circle icon-btn"
+                type="button"
+                (click)="openDeleteModal(presupuesto)"
+                aria-label="Eliminar presupuesto"
+                title="Eliminar presupuesto"
+              >
+                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #deletePresupuestoBody>
+  <p *ngIf="presupuestoToDelete()">
+    ¿Seguro que deseas eliminar el presupuesto "{{ presupuestoToDelete()?.nombre }}"?
+  </p>
+</ng-template>
+
+<app-confirm-modal
+  [open]="deleteModalOpen()"
+  title="Eliminar presupuesto"
+  [bodyTemplate]="deletePresupuestoBody"
+  [loading]="loading()"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  (cancel)="closeDeleteModal()"
+  (confirm)="confirmDelete()"
+></app-confirm-modal>

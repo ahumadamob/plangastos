@@ -1,0 +1,378 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Periodos</span>
+  </div>
+  <div class="card-body">
+    <div *ngIf="loadingDropdown()" class="alert alert-info">Cargando periodos...</div>
+    <div *ngIf="errorMessage()" class="alert alert-danger">{{ errorMessage() }}</div>
+    <div class="mb-3">
+      <label for="periodo" class="form-label">Selecciona un periodo</label>
+      <select
+        id="periodo"
+        class="form-select"
+        [disabled]="loadingDropdown() || dropdown().length === 0"
+        (change)="onPeriodoChange($event)"
+      >
+        <option value="">{{ dropdown().length === 0 ? 'No hay periodos disponibles' : 'Selecciona un periodo' }}</option>
+        <option *ngFor="let periodo of dropdown()" [value]="periodo.id">{{ periodo.nombre }}</option>
+      </select>
+    </div>
+    <div *ngIf="loadingData()" class="alert alert-info">Cargando datos del periodo...</div>
+    <div *ngIf="!loadingData() && selectedPresupuestoId() === null" class="alert alert-secondary">
+      Selecciona un periodo para ver las partidas planificadas.
+    </div>
+
+    <ng-container *ngIf="selectedPresupuestoId() !== null">
+      <ng-template #transactionsTemplate let-partida>
+        <tr>
+          <td colspan="7">
+            <div class="border rounded p-3 bg-light">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div>
+                  <div class="fw-bold">Transacciones de: {{ partida.descripcion }}</div>
+                  <div class="text-muted small">Total registrado: {{ getTransaccionesSum(partida) | number: '1.0-0' }}</div>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeTransactionsView()">
+                  Cerrar
+                </button>
+              </div>
+              <div *ngIf="(partida.transacciones?.length ?? 0) === 0" class="text-muted fst-italic">
+                No hay transacciones registradas para esta partida.
+              </div>
+              <div *ngIf="(partida.transacciones?.length ?? 0) > 0" class="table-responsive">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Descripción</th>
+                      <th>Cuenta</th>
+                      <th>Fecha</th>
+                      <th class="text-end">Monto</th>
+                      <th>Referencia</th>
+                      <th class="text-end">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let transaccion of partida.transacciones">
+                      <td>{{ transaccion.descripcion }}</td>
+                      <td>{{ transaccion.cuenta.nombre }}</td>
+                      <td>{{ transaccion.fecha | date: 'dd/MM/yyyy' }}</td>
+                      <td class="text-end">{{ transaccion.monto | number: '1.0-0' }}</td>
+                      <td>{{ transaccion.referenciaExterna || '—' }}</td>
+                      <td class="text-end">
+                        <button
+                          type="button"
+                          class="btn btn-danger btn-sm rounded-circle delete-btn"
+                          (click)="confirmDeleteTransaccion(transaccion)"
+                          [disabled]="deletingTransactionId() === transaccion.id"
+                          aria-label="Eliminar transacción"
+                          title="Eliminar transacción"
+                        >
+                          <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #inlineFormTemplate let-partida>
+        <tr>
+          <td colspan="7">
+            <app-transaction-inline-form
+              [partida]="partida"
+              [form]="newTransactionForm"
+              [cuentasFinancieras]="cuentasFinancieras()"
+              [saving]="savingTransaction()"
+              [statusMessage]="inlineStatusMessage()"
+              [errorMessage]="inlineErrorMessage()"
+              (cancel)="closeInlineForm()"
+              (submitForm)="submitNewTransaction()"
+            ></app-transaction-inline-form>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template #newPlanTemplate let-category>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="fw-bold">{{ getNewPlanTitle(category) }}</div>
+            <div class="text-muted small">Periodo: {{ getSelectedPeriodoNombre() || '—' }}</div>
+          </div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeNewPlanForm()" [disabled]="newPlanSaving()">
+            Cerrar
+          </button>
+        </div>
+        <form [formGroup]="newPlanForm" (ngSubmit)="submitNewPlanForm()" novalidate>
+          <div class="row g-2">
+            <div class="col-12 col-md-4">
+              <label [for]="'rubro-' + category" class="form-label">Rubro</label>
+              <select
+                [id]="'rubro-' + category"
+                class="form-select"
+                formControlName="rubro_id"
+                [class.is-invalid]="isNewPlanInvalid('rubro_id')"
+                required
+              >
+                <option [ngValue]="null" disabled>Selecciona un rubro</option>
+                <option *ngFor="let rubro of getRubrosByCategory(category)" [ngValue]="rubro.id">
+                  {{ rubro.nombre }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="isNewPlanInvalid('rubro_id')">Selecciona el rubro de la partida.</div>
+            </div>
+            <div class="col-12 col-md-4">
+              <label [for]="'descripcion-' + category" class="form-label">Descripción</label>
+              <input
+                [id]="'descripcion-' + category"
+                type="text"
+                class="form-control"
+                formControlName="descripcion"
+                [class.is-invalid]="isNewPlanInvalid('descripcion')"
+                autocomplete="off"
+                required
+              />
+              <div class="invalid-feedback" *ngIf="isNewPlanInvalid('descripcion')">
+                Ingresa una descripción (mínimo 3 caracteres).
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <label [for]="'monto-' + category" class="form-label">Monto comprometido</label>
+              <input
+                [id]="'monto-' + category"
+                type="number"
+                class="form-control"
+                formControlName="montoComprometido"
+                [class.is-invalid]="isNewPlanInvalid('montoComprometido')"
+                step="0.01"
+                min="0"
+                required
+              />
+              <div class="invalid-feedback" *ngIf="isNewPlanInvalid('montoComprometido')">
+                Ingresa un monto comprometido válido.
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <label [for]="'fecha-' + category" class="form-label">Fecha objetivo</label>
+              <input [id]="'fecha-' + category" type="date" class="form-control" formControlName="fechaObjetivo" />
+            </div>
+            <div class="col-12 col-md-2">
+              <label [for]="'cuotas-' + category" class="form-label">Cuotas</label>
+              <input
+                [id]="'cuotas-' + category"
+                type="number"
+                class="form-control"
+                formControlName="cuota"
+                [class.is-invalid]="isNewPlanInvalid('cuota')"
+                min="1"
+              />
+              <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cuota')">
+                Ingresa un número de cuotas válido (1 o más).
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <label [for]="'cantidad-cuotas-' + category" class="form-label">Cantidad de cuotas</label>
+              <input
+                [id]="'cantidad-cuotas-' + category"
+                type="number"
+                class="form-control"
+                formControlName="cantidadCuotas"
+                [class.is-invalid]="isNewPlanInvalid('cantidadCuotas')"
+                min="1"
+              />
+              <div class="invalid-feedback" *ngIf="isNewPlanInvalid('cantidadCuotas')">
+                Ingresa una cantidad de cuotas válida (1 o más).
+              </div>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button type="submit" class="btn btn-primary btn-sm" [disabled]="newPlanSaving()">Guardar partida</button>
+              <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeNewPlanForm()" [disabled]="newPlanSaving()">
+                Cancelar
+              </button>
+            </div>
+            <div class="col-12">
+              <div *ngIf="newPlanStatusMessage()" class="alert alert-success mb-0">{{ newPlanStatusMessage() }}</div>
+              <div *ngIf="newPlanErrorMessage()" class="alert alert-danger mb-0">{{ newPlanErrorMessage() }}</div>
+            </div>
+          </div>
+        </form>
+      </ng-template>
+
+      <div class="row row-cols-1 row-cols-md-4 g-3 mb-3">
+        <div class="col">
+          <div class="card text-white bg-success h-100" style="max-width: 20rem; width: 100%;">
+            <div class="card-header">Ingresos</div>
+            <div class="card-body">
+              <div class="d-flex align-items-baseline">
+                <span>Comprometido</span>
+                <strong class="ms-auto text-end">{{ getTotal(ingresos()) | number: '1.0-0' }}</strong>
+              </div>
+              <div class="d-flex align-items-baseline">
+                <span>Pagado</span>
+                <strong class="ms-auto text-end">{{ getTotalTransacciones(ingresos()) | number: '1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-black bg-warning h-100" style="max-width: 20rem; width: 100%;">
+            <div class="card-header">Gastos</div>
+            <div class="card-body">
+              <div class="d-flex align-items-baseline">
+                <span>Comprometido</span>
+                <strong class="ms-auto text-end">{{ getTotal(gastos()) | number: '1.0-0' }}</strong>
+              </div>
+              <div class="d-flex align-items-baseline">
+                <span>Pagado</span>
+                <strong class="ms-auto text-end">{{ getTotalTransacciones(gastos()) | number: '1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card bg-light h-100" style="max-width: 20rem; width: 100%;">
+            <div class="card-header">Ahorro</div>
+            <div class="card-body">
+              <div class="d-flex align-items-baseline">
+                <span>Comprometido</span>
+                <strong class="ms-auto text-end">{{ getTotal(ahorro()) | number: '1.0-0' }}</strong>
+              </div>
+              <div class="d-flex align-items-baseline">
+                <span>Pagado</span>
+                <strong class="ms-auto text-end">{{ getTotalTransacciones(ahorro()) | number: '1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card text-white bg-secondary h-100" style="max-width: 20rem; width: 100%;">
+            <div class="card-header">Total</div>
+            <div class="card-body">
+              <div class="d-flex align-items-baseline">
+                <span>Comprometido</span>
+                <strong class="ms-auto text-end">{{ getSaldoComprometido() | number: '1.0-0' }}</strong>
+              </div>
+              <div class="d-flex align-items-baseline">
+                <span>Pagado</span>
+                <strong class="ms-auto text-end">{{ getSaldoReal() | number: '1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <app-plan-category-card
+          [category]="'ingreso'"
+          [items]="ingresos()"
+          [totals]="{ comprometido: getTotal(ingresos()), transacciones: getTotalTransacciones(ingresos()) }"
+          [inlineFormPartidaId]="inlineFormPartidaId()"
+          [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
+          [consolidatingPartidaId]="consolidatingPartidaId()"
+          [deletingPartidaId]="deletingPartidaId()"
+          [canConsolidate]="canConsolidateFn"
+          [hasTransacciones]="hasTransaccionesFn"
+          [getRowClasses]="getRowClassesFn"
+          [getTransaccionesSum]="getTransaccionesSumFn"
+          [getCuotasLabel]="getCuotasLabelFn"
+          [disableNewPlan]="selectedPresupuestoId() === null || loadingData()"
+          [showNewPlan]="newPlanCategory() === 'ingreso'"
+          [transactionsTemplate]="transactionsTemplate"
+          [inlineFormTemplate]="inlineFormTemplate"
+          [newPlanTemplate]="newPlanTemplate"
+          (newPlan)="openNewPlanForm($event)"
+          (toggleTransactions)="toggleTransactionsView($event)"
+          (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (consolidate)="confirmConsolidatePartida($event)"
+          (delete)="confirmDeletePartida($event)"
+        ></app-plan-category-card>
+
+        <app-plan-category-card
+          [category]="'gasto'"
+          [items]="gastos()"
+          [totals]="{ comprometido: getTotal(gastos()), transacciones: getTotalTransacciones(gastos()) }"
+          [inlineFormPartidaId]="inlineFormPartidaId()"
+          [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
+          [consolidatingPartidaId]="consolidatingPartidaId()"
+          [deletingPartidaId]="deletingPartidaId()"
+          [canConsolidate]="canConsolidateFn"
+          [hasTransacciones]="hasTransaccionesFn"
+          [getRowClasses]="getRowClassesFn"
+          [getTransaccionesSum]="getTransaccionesSumFn"
+          [getCuotasLabel]="getCuotasLabelFn"
+          [disableNewPlan]="selectedPresupuestoId() === null || loadingData()"
+          [showNewPlan]="newPlanCategory() === 'gasto'"
+          [transactionsTemplate]="transactionsTemplate"
+          [inlineFormTemplate]="inlineFormTemplate"
+          [newPlanTemplate]="newPlanTemplate"
+          (newPlan)="openNewPlanForm($event)"
+          (toggleTransactions)="toggleTransactionsView($event)"
+          (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (consolidate)="confirmConsolidatePartida($event)"
+          (delete)="confirmDeletePartida($event)"
+        ></app-plan-category-card>
+
+        <app-plan-category-card
+          [category]="'ahorro'"
+          [items]="ahorro()"
+          [totals]="{ comprometido: getTotal(ahorro()), transacciones: getTotalTransacciones(ahorro()) }"
+          [inlineFormPartidaId]="inlineFormPartidaId()"
+          [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
+          [consolidatingPartidaId]="consolidatingPartidaId()"
+          [deletingPartidaId]="deletingPartidaId()"
+          [canConsolidate]="canConsolidateFn"
+          [hasTransacciones]="hasTransaccionesFn"
+          [getRowClasses]="getRowClassesFn"
+          [getTransaccionesSum]="getTransaccionesSumFn"
+          [getCuotasLabel]="getCuotasLabelFn"
+          [disableNewPlan]="selectedPresupuestoId() === null || loadingData()"
+          [showNewPlan]="newPlanCategory() === 'ahorro'"
+          [transactionsTemplate]="transactionsTemplate"
+          [inlineFormTemplate]="inlineFormTemplate"
+          [newPlanTemplate]="newPlanTemplate"
+          (newPlan)="openNewPlanForm($event)"
+          (toggleTransactions)="toggleTransactionsView($event)"
+          (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (consolidate)="confirmConsolidatePartida($event)"
+          (delete)="confirmDeletePartida($event)"
+        ></app-plan-category-card>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<app-confirm-modal
+  [open]="deleteTransactionModalOpen()"
+  title="Eliminar transacción"
+  [message]="'¿Seguro que deseas eliminar la transacción <strong>' + (transaccionToDelete()?.descripcion || '') + '</strong>?'"
+  confirmLabel="Eliminar"
+  confirmClass="btn-danger"
+  [confirming]="deletingTransactionId() !== null"
+  (cancel)="closeDeleteTransactionModal()"
+  (confirm)="deleteTransaccion()"
+></app-confirm-modal>
+
+<app-confirm-modal
+  [open]="consolidateModalOpen()"
+  title="Consolidar partida"
+  [message]="'¿Seguro que deseas consolidar este gasto <strong>' + (partidaToConsolidate()?.descripcion || '') + '</strong>?'"
+  confirmLabel="Consolidar"
+  confirmClass="btn-info"
+  [confirming]="consolidatingPartidaId() !== null"
+  (cancel)="closeConsolidateModal()"
+  (confirm)="consolidatePartida()"
+></app-confirm-modal>
+
+<app-confirm-modal
+  [open]="deleteModalOpen()"
+  title="Eliminar partida"
+  [message]="'¿Seguro que deseas eliminar la partida <strong>' + (partidaToDelete()?.descripcion || '') + '</strong>?'"
+  confirmLabel="Eliminar"
+  confirmClass="btn-danger"
+  [confirming]="deletingPartidaId() !== null"
+  (cancel)="closeDeleteModal()"
+  (confirm)="deletePartida()"
+></app-confirm-modal>

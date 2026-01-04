@@ -1,0 +1,188 @@
+<app-crud-card
+  title="Transacciones"
+  [headerActions]="headerActions"
+  [formTemplate]="formTemplate"
+  [contentTemplate]="contentTemplate"
+>
+</app-crud-card>
+
+<ng-template #headerActions>
+  <button type="button" class="btn btn-success btn-sm" (click)="showNewForm()">
+    Nueva transacción
+  </button>
+</ng-template>
+
+<ng-template #formTemplate>
+  <div *ngIf="displayForm()" class="mb-4">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="row g-3">
+        <div class="col-12">
+          <app-catalog-input
+            label="Descripción"
+            [control]="getControl('descripcion')"
+            [required]="true"
+            [maxLength]="250"
+            [errorMessage]="descripcionError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-select
+            label="Presupuesto"
+            [control]="getControl('presupuesto_id')"
+            [options]="presupuestoOptions()"
+            placeholder="Selecciona un presupuesto"
+            [required]="true"
+            [errorMessage]="presupuestoError"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-select
+            label="Rubro"
+            [control]="getControl('rubro_id')"
+            [options]="rubroOptions()"
+            placeholder="Selecciona un rubro"
+            [required]="true"
+            [errorMessage]="rubroError"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-select
+            label="Cuenta financiera"
+            [control]="getControl('cuentaFinanciera_id')"
+            [options]="cuentaOptions()"
+            placeholder="Selecciona una cuenta"
+            [required]="true"
+            [errorMessage]="cuentaError"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-input
+            label="Fecha"
+            [control]="getControl('fecha')"
+            type="date"
+            [required]="true"
+            [errorMessage]="fechaError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-input
+            label="Monto"
+            [control]="getControl('monto')"
+            type="number"
+            [required]="true"
+            [min]="0"
+            [step]="0.01"
+            [errorMessage]="montoError"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <app-catalog-select
+            label="Partida planificada"
+            [control]="getControl('partidaPlanificada_id')"
+            [options]="partidaOptions()"
+          ></app-catalog-select>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <app-catalog-input
+            label="Referencia externa"
+            [control]="getControl('referenciaExterna')"
+            [maxLength]="150"
+          ></app-catalog-input>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="form.invalid || saving()">
+            {{ editingTransaccionId() ? 'Guardar cambios' : 'Crear transacción' }}
+          </button>
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelForm()" [disabled]="saving()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+    <hr />
+  </div>
+</ng-template>
+
+<ng-template #contentTemplate>
+  <div *ngIf="loading()" class="alert alert-info mb-3">Cargando transacciones...</div>
+  <div *ngIf="statusMessage()" class="alert alert-success mb-3">{{ statusMessage() }}</div>
+  <div *ngIf="errorMessage()" class="alert alert-danger mb-3">{{ errorMessage() }}</div>
+  <div *ngIf="!loading() && transacciones().length === 0" class="alert alert-secondary">
+    No hay transacciones registradas todavía.
+  </div>
+
+  <div class="table-responsive" *ngIf="transacciones().length > 0">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Descripción</th>
+          <th>Presupuesto</th>
+          <th>Rubro</th>
+          <th>Cuenta</th>
+          <th>Fecha</th>
+          <th class="text-end">Monto</th>
+          <th>Referencia</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let transaccion of transacciones()">
+          <td>{{ transaccion.descripcion }}</td>
+          <td>{{ transaccion.presupuesto.nombre }}</td>
+          <td>{{ transaccion.rubro.nombre }}</td>
+          <td>{{ transaccion.cuenta.nombre }}</td>
+          <td>{{ transaccion.fecha }}</td>
+          <td class="text-end">{{ transaccion.monto | number : '1.2-2' }}</td>
+          <td>{{ transaccion.referenciaExterna || '—' }}</td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-2 justify-content-end">
+              <button
+                class="btn btn-primary btn-sm rounded-circle icon-btn"
+                type="button"
+                (click)="startEdit(transaccion)"
+                aria-label="Editar transacción"
+                title="Editar transacción"
+              >
+                <i aria-hidden="true" class="fa-solid fa-pen"></i>
+              </button>
+              <button
+                class="btn btn-danger btn-sm rounded-circle icon-btn"
+                type="button"
+                (click)="openDeleteModal(transaccion)"
+                aria-label="Eliminar transacción"
+                title="Eliminar transacción"
+              >
+                <i aria-hidden="true" class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-template>
+
+<ng-template #deleteTransaccionBody>
+  <p *ngIf="transaccionToDelete()">
+    ¿Seguro que deseas eliminar la transacción "{{ transaccionToDelete()?.descripcion }}"?
+  </p>
+</ng-template>
+
+<app-confirm-modal
+  [open]="deleteModalOpen()"
+  title="Eliminar transacción"
+  [bodyTemplate]="deleteTransaccionBody"
+  [loading]="loading()"
+  confirmLabel="Eliminar"
+  cancelLabel="Cancelar"
+  (cancel)="closeDeleteModal()"
+  (confirm)="confirmDelete()"
+></app-confirm-modal>
