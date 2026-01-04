@@ -5,42 +5,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   selector: 'app-leftbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  template: `
-    <div class="list-group">
-      <a
-        class="list-group-item list-group-item-action"
-        routerLink="/periodos"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Periodos
-      </a>
-      <a
-        class="list-group-item list-group-item-action"
-        routerLink="/presupuestos"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Presupuestos
-      </a>
-      <a
-        class="list-group-item list-group-item-action"
-        routerLink="/rubros"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Rubros
-      </a>
-      <a
-        class="list-group-item list-group-item-action"
-        routerLink="/cuentas-financieras"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Cuentas financieras
-      </a>
-    </div>
-  `,
-  styles: [],
+  templateUrl: './leftbar.component.html',
+  styleUrls: ['./leftbar.component.scss'],
 })
 export class Leftbar {}
