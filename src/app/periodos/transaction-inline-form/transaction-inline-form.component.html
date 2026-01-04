@@ -1,0 +1,84 @@
+<div class="border rounded p-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+      <div class="fw-bold">Nueva transacción para: {{ partida.descripcion }}</div>
+      <div class="text-muted small">Rubro: {{ partida.rubro.nombre }}</div>
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onCancel()" [disabled]="saving">
+      Cerrar
+    </button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="row g-2">
+      <div class="col-12 col-md-4">
+        <label [for]="getControlId('descripcion')" class="form-label">Descripción</label>
+        <input
+          class="form-control"
+          [id]="getControlId('descripcion')"
+          type="text"
+          formControlName="descripcion"
+          [class.is-invalid]="isInvalid('descripcion')"
+          autocomplete="off"
+          required
+        />
+        <div class="invalid-feedback" *ngIf="isInvalid('descripcion')">
+          Ingresa una descripción (mínimo 3 caracteres).
+        </div>
+      </div>
+      <div class="col-12 col-md-2">
+        <label [for]="getControlId('fecha')" class="form-label">Fecha</label>
+        <input
+          class="form-control"
+          [id]="getControlId('fecha')"
+          type="date"
+          formControlName="fecha"
+          [class.is-invalid]="isInvalid('fecha')"
+          required
+        />
+        <div class="invalid-feedback" *ngIf="isInvalid('fecha')">Selecciona la fecha.</div>
+      </div>
+      <div class="col-12 col-md-2">
+        <label [for]="getControlId('monto')" class="form-label">Monto</label>
+        <input
+          class="form-control"
+          [id]="getControlId('monto')"
+          type="number"
+          formControlName="monto"
+          [class.is-invalid]="isInvalid('monto')"
+          step="0.01"
+          min="0"
+          required
+        />
+        <div class="invalid-feedback" *ngIf="isInvalid('monto')">Ingresa un monto válido.</div>
+      </div>
+      <div class="col-12 col-md-4">
+        <label [for]="getControlId('cuentaFinanciera_id')" class="form-label">Cuenta financiera</label>
+        <select
+          class="form-select"
+          [id]="getControlId('cuentaFinanciera_id')"
+          formControlName="cuentaFinanciera_id"
+          [class.is-invalid]="isInvalid('cuentaFinanciera_id')"
+          required
+        >
+          <option [ngValue]="null" disabled>Selecciona una cuenta</option>
+          <option *ngFor="let cuenta of cuentasFinancieras" [ngValue]="cuenta.id">
+            {{ cuenta.nombre }} - {{ cuenta.divisa.codigo }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="isInvalid('cuentaFinanciera_id')">
+          Selecciona la cuenta financiera.
+        </div>
+      </div>
+      <div class="col-12 inline-actions">
+        <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving">Guardar transacción</button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onCancel()" [disabled]="saving">
+          Cancelar
+        </button>
+      </div>
+      <div class="col-12">
+        <div *ngIf="statusMessage" class="alert alert-success mb-0">{{ statusMessage }}</div>
+        <div *ngIf="errorMessage" class="alert alert-danger mb-0">{{ errorMessage }}</div>
+      </div>
+    </div>
+  </form>
+</div>

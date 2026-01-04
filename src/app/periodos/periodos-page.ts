@@ -13,11 +13,20 @@ import { PresupuestoDropdown, PresupuestoService } from '../presupuestos/presupu
 import { TransaccionRequestDto, TransaccionService } from '../transacciones/transaccion.service';
 import { CuentaFinanciera } from '../cuentas-financieras/cuenta-financiera.service';
 import { RubroService } from '../rubros/rubro.service';
+import { PlanCategory, PlanCategoryCardComponent } from './plan-category-card/plan-category-card.component';
+import { TransactionInlineFormComponent } from './transaction-inline-form/transaction-inline-form.component';
+import { ConfirmModalComponent } from './confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-periodos-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    PlanCategoryCardComponent,
+    TransactionInlineFormComponent,
+    ConfirmModalComponent,
+  ],
   templateUrl: './periodos-page.component.html',
   styleUrls: ['./periodos-page.component.scss'],
 })
@@ -46,12 +55,22 @@ export class PeriodosPage implements OnInit {
   protected readonly transaccionToDelete = signal<PartidaPlanificadaTransaccion | null>(null);
   protected readonly deletingTransactionId = signal<number | null>(null);
   protected readonly newTransactionForm: FormGroup;
-  protected readonly newPlanCategory = signal<'ingreso' | 'gasto' | 'ahorro' | null>(null);
+  protected readonly newPlanCategory = signal<PlanCategory | null>(null);
   protected readonly newPlanForm: FormGroup;
   protected readonly newPlanSaving = signal(false);
   protected readonly newPlanStatusMessage = signal('');
   protected readonly newPlanErrorMessage = signal('');
   protected readonly rubros = signal<Rubro[]>([]);
+  protected readonly newPlanTitles: Record<PlanCategory, string> = {
+    ingreso: 'Nueva partida planificada de ingreso',
+    gasto: 'Nueva partida planificada de gasto',
+    ahorro: 'Nueva partida planificada de ahorro',
+  };
+  protected readonly getTransaccionesSumFn = (partida: PartidaPlanificada) => this.getTransaccionesSum(partida);
+  protected readonly getCuotasLabelFn = (partida: PartidaPlanificada) => this.getCuotasLabel(partida);
+  protected readonly getRowClassesFn = (partida: PartidaPlanificada) => this.getRowClasses(partida);
+  protected readonly hasTransaccionesFn = (partida: PartidaPlanificada) => this.hasTransacciones(partida);
+  protected readonly canConsolidateFn = (partida: PartidaPlanificada) => this.canConsolidate(partida);
 
   constructor(
     private readonly presupuestoService: PresupuestoService,
@@ -273,7 +292,7 @@ export class PeriodosPage implements OnInit {
     this.inlineErrorMessage.set('');
   }
 
-  protected openNewPlanForm(category: 'ingreso' | 'gasto' | 'ahorro'): void {
+  protected openNewPlanForm(category: PlanCategory): void {
     this.newPlanCategory.set(category);
     this.newPlanStatusMessage.set('');
     this.newPlanErrorMessage.set('');
@@ -380,8 +399,8 @@ export class PeriodosPage implements OnInit {
     });
   }
 
-  protected getRubrosByCategory(category: 'ingreso' | 'gasto' | 'ahorro'): Rubro[] {
-    const naturalezaMap: Record<'ingreso' | 'gasto' | 'ahorro', string[]> = {
+  protected getRubrosByCategory(category: PlanCategory): Rubro[] {
+    const naturalezaMap: Record<PlanCategory, string[]> = {
       ingreso: ['INGRESO'],
       gasto: ['GASTO', 'EGRESO'],
       ahorro: ['AHORRO', 'RESERVA_AHORRO'],
@@ -488,6 +507,10 @@ export class PeriodosPage implements OnInit {
 
   protected hasTransacciones(partida: PartidaPlanificada): boolean {
     return (partida.transacciones?.length ?? 0) > 0;
+  }
+
+  protected getNewPlanTitle(category: PlanCategory): string {
+    return this.newPlanTitles[category];
   }
 
   protected confirmDeleteTransaccion(transaccion: PartidaPlanificadaTransaccion): void {

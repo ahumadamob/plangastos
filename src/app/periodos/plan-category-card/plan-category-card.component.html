@@ -1,0 +1,112 @@
+<div class="card w-100">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>{{ categoryLabels[category] }}</span>
+    <button type="button" class="btn btn-primary btn-sm" (click)="onNewPlan()" [disabled]="disableNewPlan">
+      {{ buttonLabels[category] }}
+    </button>
+  </div>
+  <div class="card-body">
+    <div *ngIf="items.length === 0" class="text-muted">{{ emptyMessages[category] }}</div>
+    <div class="table-responsive" *ngIf="items.length > 0">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Rubro</th>
+            <th class="text-end">Monto comprometido</th>
+            <th class="text-end">Monto transacciones</th>
+            <th>Fecha objetivo</th>
+            <th>Cuotas</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let item of items">
+            <tr [ngClass]="getRowClasses(item)">
+              <td>{{ item.descripcion }}</td>
+              <td>{{ item.rubro.nombre }}</td>
+              <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+              <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
+              <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
+              <td>{{ getCuotasLabel(item) }}</td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-light btn-sm rounded-circle icon-btn view-btn"
+                    (click)="onToggleTransactions(item)"
+                    aria-label="Ver transacciones"
+                    title="Ver transacciones"
+                    *ngIf="hasTransacciones(item)"
+                  >
+                    <i aria-hidden="true" class="fa-solid fa-magnifying-glass view-icon"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm rounded-circle icon-btn transaction-btn"
+                    (click)="onToggleInlineForm(item)"
+                    aria-label="Ingresar transacción"
+                    title="Ingresar transacción"
+                    *ngIf="item.consolidado !== true"
+                  >
+                    <span aria-hidden="true" class="transaction-icon">⇄</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-info btn-sm rounded-circle icon-btn consolidate-btn"
+                    (click)="onConsolidate(item)"
+                    *ngIf="canConsolidate(item)"
+                    [disabled]="consolidatingPartidaId === item.id"
+                    aria-label="Consolidar partida"
+                    title="Consolidar partida"
+                  >
+                    <i aria-hidden="true" class="fa-solid fa-circle-check consolidate-icon"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger btn-sm rounded-circle icon-btn delete-btn"
+                    (click)="onDelete(item)"
+                    [disabled]="deletingPartidaId === item.id"
+                    *ngIf="!hasTransacciones(item)"
+                    aria-label="Eliminar partida"
+                    title="Eliminar partida"
+                  >
+                    <i aria-hidden="true" class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <ng-container *ngIf="transactionsTemplate && viewingTransactionsPartidaId === item.id">
+              <ng-container
+                [ngTemplateOutlet]="transactionsTemplate"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              ></ng-container>
+            </ng-container>
+            <ng-container *ngIf="inlineFormTemplate && inlineFormPartidaId === item.id">
+              <ng-container
+                [ngTemplateOutlet]="inlineFormTemplate"
+                [ngTemplateOutletContext]="{ $implicit: item }"
+              ></ng-container>
+            </ng-container>
+          </ng-container>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="2" class="text-end">Total</th>
+            <th class="text-end">{{ totals.comprometido | number: '1.0-0' }}</th>
+            <th class="text-end">{{ totals.transacciones | number: '1.0-0' }}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+  <div class="card-body border-top" *ngIf="showNewPlan && newPlanTemplate">
+    <ng-container
+      [ngTemplateOutlet]="newPlanTemplate"
+      [ngTemplateOutletContext]="{ $implicit: category }"
+    ></ng-container>
+  </div>
+</div>
