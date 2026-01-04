@@ -1,3 +1,69 @@
-<p>
-  header works!
-</p>
+<header>
+  <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" [routerLink]="['/']">{{ brandTitle }}</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarColor02"
+        aria-controls="navbarColor02"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarColor02">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item" *ngFor="let link of navLinks">
+            <a
+              class="nav-link"
+              [routerLink]="link.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="link.exact ? exactActiveOptions : nonExactActiveOptions"
+              #rla="routerLinkActive"
+              [attr.aria-current]="rla.isActive ? 'page' : null"
+            >
+              {{ link.label }}
+              <span *ngIf="link.showCurrentIndicator" class="visually-hidden">(actual)</span>
+            </a>
+          </li>
+          <li class="nav-item dropdown" *ngIf="dropdownEntries.length">
+            <a
+              class="nav-link dropdown-toggle"
+              data-bs-toggle="dropdown"
+              href="#"
+              role="button"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Más
+            </a>
+            <div class="dropdown-menu">
+              <ng-container *ngFor="let entry of dropdownEntries">
+                <ng-container *ngIf="isLink(entry); else dropdownDivider">
+                  <a class="dropdown-item" [routerLink]="entry.path" routerLinkActive="active">
+                    {{ entry.label }}
+                  </a>
+                </ng-container>
+              </ng-container>
+              <ng-template #dropdownDivider>
+                <div class="dropdown-divider"></div>
+              </ng-template>
+            </div>
+          </li>
+        </ul>
+        <form class="d-flex" role="search" (submit)="onSearch($event)">
+          <input
+            [(ngModel)]="searchTerm"
+            class="form-control me-sm-2"
+            name="search"
+            type="search"
+            placeholder="Buscar"
+          />
+          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Buscar</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
