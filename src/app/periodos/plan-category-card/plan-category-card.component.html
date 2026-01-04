@@ -14,6 +14,7 @@
             <th>Descripción</th>
             <th>Rubro</th>
             <th class="text-end">Monto comprometido</th>
+            <th class="text-center">Modificar</th>
             <th class="text-end">Monto transacciones</th>
             <th>Fecha objetivo</th>
             <th>Cuotas</th>
@@ -26,6 +27,19 @@
               <td>{{ item.descripcion }}</td>
               <td>{{ item.rubro.nombre }}</td>
               <td class="text-end">{{ item.montoComprometido | number: '1.0-0' }}</td>
+              <td class="text-center">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="onUpdateMontoComprometido(item)"
+                  *ngIf="item.consolidado !== true"
+                  [disabled]="updatingMontoPartidaId === item.id"
+                  aria-label="Modificar monto comprometido"
+                  title="Modificar monto comprometido"
+                >
+                  Editar
+                </button>
+              </td>
               <td class="text-end">{{ getTransaccionesSum(item) | number: '1.0-0' }}</td>
               <td>{{ item.fechaObjetivo ? (item.fechaObjetivo | date: 'dd/MM/yyyy') : '—' }}</td>
               <td>{{ getCuotasLabel(item) }}</td>
@@ -94,6 +108,7 @@
           <tr>
             <th colspan="2" class="text-end">Total</th>
             <th class="text-end">{{ totals.comprometido | number: '1.0-0' }}</th>
+            <th></th>
             <th class="text-end">{{ totals.transacciones | number: '1.0-0' }}</th>
             <th></th>
             <th></th>

@@ -50,6 +50,12 @@ export interface PartidaPlanificadaRequestDto {
   cantidadCuotas?: number | null;
 }
 
+export interface ActualizarMontoComprometidoRequestDto {
+  montoComprometido?: number | null;
+  porcentaje?: number | null;
+  solicitudValida?: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -128,6 +134,22 @@ export class PartidaPlanificadaService {
     return this.http.patch<ApiResponse<PartidaPlanificada>>(`${this.baseUrl}/partida-planificada/${id}`, {
       consolidado: true,
     });
+  }
+
+  updateMontoComprometido(
+    id: number,
+    payload: ActualizarMontoComprometidoRequestDto
+  ): Observable<ApiResponse<PartidaPlanificada>> {
+    const normalizedPayload = {
+      ...payload,
+      montoComprometido: this.toNumberOrNull(payload.montoComprometido),
+      porcentaje: this.toNumberOrNull(payload.porcentaje),
+    };
+
+    return this.http.patch<ApiResponse<PartidaPlanificada>>(
+      `${this.baseUrl}/partida-planificada/${id}/monto-comprometido`,
+      normalizedPayload
+    );
   }
 
   delete(id: number): Observable<ApiResponse<unknown>> {

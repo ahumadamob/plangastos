@@ -25,7 +25,7 @@
     <ng-container *ngIf="selectedPresupuestoId() !== null">
       <ng-template #transactionsTemplate let-partida>
         <tr>
-          <td colspan="7">
+          <td colspan="8">
             <div class="border rounded p-3 bg-light">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <div>
@@ -81,7 +81,7 @@
 
       <ng-template #inlineFormTemplate let-partida>
         <tr>
-          <td colspan="7">
+          <td colspan="8">
             <app-transaction-inline-form
               [partida]="partida"
               [form]="newTransactionForm"
@@ -273,6 +273,7 @@
           [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
           [consolidatingPartidaId]="consolidatingPartidaId()"
           [deletingPartidaId]="deletingPartidaId()"
+          [updatingMontoPartidaId]="updatingMontoPartidaId()"
           [canConsolidate]="canConsolidateFn"
           [hasTransacciones]="hasTransaccionesFn"
           [getRowClasses]="getRowClassesFn"
@@ -286,6 +287,7 @@
           (newPlan)="openNewPlanForm($event)"
           (toggleTransactions)="toggleTransactionsView($event)"
           (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (updateMontoComprometido)="openUpdateMontoModal($event)"
           (consolidate)="confirmConsolidatePartida($event)"
           (delete)="confirmDeletePartida($event)"
         ></app-plan-category-card>
@@ -298,6 +300,7 @@
           [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
           [consolidatingPartidaId]="consolidatingPartidaId()"
           [deletingPartidaId]="deletingPartidaId()"
+          [updatingMontoPartidaId]="updatingMontoPartidaId()"
           [canConsolidate]="canConsolidateFn"
           [hasTransacciones]="hasTransaccionesFn"
           [getRowClasses]="getRowClassesFn"
@@ -311,6 +314,7 @@
           (newPlan)="openNewPlanForm($event)"
           (toggleTransactions)="toggleTransactionsView($event)"
           (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (updateMontoComprometido)="openUpdateMontoModal($event)"
           (consolidate)="confirmConsolidatePartida($event)"
           (delete)="confirmDeletePartida($event)"
         ></app-plan-category-card>
@@ -323,6 +327,7 @@
           [viewingTransactionsPartidaId]="viewingTransactionsPartidaId()"
           [consolidatingPartidaId]="consolidatingPartidaId()"
           [deletingPartidaId]="deletingPartidaId()"
+          [updatingMontoPartidaId]="updatingMontoPartidaId()"
           [canConsolidate]="canConsolidateFn"
           [hasTransacciones]="hasTransaccionesFn"
           [getRowClasses]="getRowClassesFn"
@@ -336,6 +341,7 @@
           (newPlan)="openNewPlanForm($event)"
           (toggleTransactions)="toggleTransactionsView($event)"
           (toggleInlineForm)="toggleNewTransactionForm($event)"
+          (updateMontoComprometido)="openUpdateMontoModal($event)"
           (consolidate)="confirmConsolidatePartida($event)"
           (delete)="confirmDeletePartida($event)"
         ></app-plan-category-card>
@@ -343,6 +349,103 @@
     </ng-container>
   </div>
 </div>
+
+<ng-container *ngIf="updateMontoModalOpen()">
+  <div class="modal d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modificar monto comprometido</h5>
+          <button
+            type="button"
+            class="btn-close"
+            aria-label="Close"
+            (click)="closeUpdateMontoModal()"
+            [disabled]="updatingMontoPartidaId() !== null"
+          ></button>
+        </div>
+        <form [formGroup]="updateMontoForm" (ngSubmit)="submitUpdateMonto()" novalidate>
+          <div class="modal-body">
+            <div class="mb-3">
+              <div class="fw-bold">{{ partidaToUpdateMonto()?.descripcion }}</div>
+              <div class="text-muted small">
+                Monto actual: {{ partidaToUpdateMonto()?.montoComprometido | number: '1.0-0' }}
+              </div>
+            </div>
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="modoPorcentaje"
+                [checked]="isPorcentajeMode()"
+                (change)="onUpdateModeChange($event.target.checked ? 'porcentaje' : 'valor')"
+                [disabled]="updatingMontoPartidaId() !== null"
+              />
+              <label class="form-check-label" for="modoPorcentaje">Ingresar como porcentaje</label>
+            </div>
+            <div class="mb-3">
+              <label [for]="isPorcentajeMode() ? 'porcentaje-input' : 'monto-input'" class="form-label">
+                {{ isPorcentajeMode() ? 'Porcentaje' : 'Monto comprometido' }}
+              </label>
+              <div class="input-group">
+                <span class="input-group-text" *ngIf="!isPorcentajeMode()">$</span>
+                <input
+                  *ngIf="!isPorcentajeMode()"
+                  type="number"
+                  class="form-control"
+                  id="monto-input"
+                  formControlName="montoComprometido"
+                  [class.is-invalid]="isUpdateMontoInvalid('montoComprometido')"
+                  step="0.01"
+                  min="0"
+                  [disabled]="updatingMontoPartidaId() !== null"
+                />
+                <input
+                  *ngIf="isPorcentajeMode()"
+                  type="number"
+                  class="form-control"
+                  id="porcentaje-input"
+                  formControlName="porcentaje"
+                  [class.is-invalid]="isUpdateMontoInvalid('porcentaje')"
+                  step="0.01"
+                  min="-100"
+                  [disabled]="updatingMontoPartidaId() !== null"
+                />
+                <span class="input-group-text" *ngIf="isPorcentajeMode()">%</span>
+                <div class="invalid-feedback">
+                  {{
+                    isPorcentajeMode()
+                      ? 'Ingresa un porcentaje válido (mayor o igual a -100).'
+                      : 'Ingresa un monto comprometido válido.'
+                  }}
+                </div>
+              </div>
+              <div class="form-text" *ngIf="isPorcentajeMode()">
+                El porcentaje se aplica sobre el monto comprometido actual.
+              </div>
+            </div>
+            <div *ngIf="updateMontoError()" class="alert alert-danger mb-0">{{ updateMontoError() }}</div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeUpdateMontoModal()"
+              [disabled]="updatingMontoPartidaId() !== null"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="updatingMontoPartidaId() !== null">
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+</ng-container>
 
 <app-confirm-modal
   [open]="deleteTransactionModalOpen()"
