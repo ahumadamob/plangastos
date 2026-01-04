@@ -1,0 +1,19 @@
+<label [for]="fieldId" class="form-label">
+  {{ label }}
+  <span *ngIf="!required" class="text-muted small">(Opcional)</span>
+</label>
+<input
+  [id]="fieldId"
+  class="form-control"
+  [type]="type"
+  [formControl]="control"
+  [class.is-invalid]="invalid"
+  [attr.placeholder]="placeholder"
+  [attr.autocomplete]="autocomplete"
+  [attr.maxlength]="maxLength"
+  [attr.min]="min"
+  [attr.step]="step"
+  [required]="required"
+/>
+<div class="form-text" *ngIf="hint">{{ hint }}</div>
+<div class="invalid-feedback" *ngIf="invalid">{{ errorMessage }}</div>

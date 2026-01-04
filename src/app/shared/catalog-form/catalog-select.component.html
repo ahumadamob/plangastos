@@ -1,0 +1,17 @@
+<label [for]="fieldId" class="form-label">
+  {{ label }}
+  <span *ngIf="!required" class="text-muted small">(Opcional)</span>
+</label>
+<select
+  [id]="fieldId"
+  class="form-select"
+  [formControl]="control"
+  [class.is-invalid]="invalid"
+  [required]="required"
+>
+  <option *ngIf="placeholder" [ngValue]="null" [disabled]="required">{{ placeholder }}</option>
+  <option *ngFor="let option of options" [ngValue]="option.value" [disabled]="option.disabled">
+    {{ option.label }}
+  </option>
+</select>
+<div class="invalid-feedback" *ngIf="invalid">{{ errorMessage }}</div>

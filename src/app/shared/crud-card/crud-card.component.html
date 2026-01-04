@@ -1,0 +1,11 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>{{ title }}</span>
+    <ng-container *ngIf="headerActions" [ngTemplateOutlet]="headerActions"></ng-container>
+  </div>
+  <div class="card-body">
+    <ng-container *ngIf="formTemplate" [ngTemplateOutlet]="formTemplate"></ng-container>
+    <ng-container *ngIf="contentTemplate" [ngTemplateOutlet]="contentTemplate"></ng-container>
+    <ng-content *ngIf="!formTemplate && !contentTemplate"></ng-content>
+  </div>
+</div>
