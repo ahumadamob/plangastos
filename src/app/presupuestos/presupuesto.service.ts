@@ -15,6 +15,7 @@ export interface Presupuesto {
   codigo?: string | null;
   fechaDesde?: string | null;
   fechaHasta?: string | null;
+  presupuestoOrigen_id?: number | null;
   presupuestoOrigen?: Presupuesto | null;
   createdAt: string;
   updatedAt: string;

@@ -249,7 +249,7 @@ export class PresupuestosPage implements OnInit {
       codigo: presupuesto.codigo ?? '',
       fechaDesde: presupuesto.fechaDesde ?? null,
       fechaHasta: presupuesto.fechaHasta ?? null,
-      presupuestoOrigen_id: presupuesto.presupuestoOrigen?.id ?? null,
+      presupuestoOrigen_id: presupuesto.presupuestoOrigen?.id ?? presupuesto.presupuestoOrigen_id ?? null,
     });
   }
 
@@ -355,7 +355,18 @@ export class PresupuestosPage implements OnInit {
   private loadPresupuestos(): void {
     this.loading.set(true);
     this.presupuestoService.getAll().subscribe({
-      next: (response) => this.presupuestos.set(response.data ?? []),
+      next: (response) => {
+        const presupuestos = response.data ?? [];
+        const presupuestosPorId = new Map(presupuestos.map((presupuesto) => [presupuesto.id, presupuesto]));
+
+        presupuestos.forEach((presupuesto) => {
+          if (!presupuesto.presupuestoOrigen && presupuesto.presupuestoOrigen_id) {
+            presupuesto.presupuestoOrigen = presupuestosPorId.get(presupuesto.presupuestoOrigen_id) ?? null;
+          }
+        });
+
+        this.presupuestos.set(presupuestos);
+      },
       error: () => {
         this.errorMessage.set('No se pudieron obtener los presupuestos.');
         this.presupuestos.set([]);
