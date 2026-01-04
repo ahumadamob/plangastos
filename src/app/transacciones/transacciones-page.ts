@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
+import { CrudCardComponent } from '../shared/crud-card/crud-card.component';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { CatalogInputComponent } from '../shared/catalog-form/catalog-input.component';
+import {
+  CatalogSelectComponent,
+  CatalogOption,
+} from '../shared/catalog-form/catalog-select.component';
 import {
   TransaccionService,
   Transaccion,
@@ -15,7 +22,14 @@ import { PartidaPlanificada } from '../partidas-planificadas/partida-planificada
 @Component({
   selector: 'app-transacciones-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CrudCardComponent,
+    ConfirmModalComponent,
+    CatalogInputComponent,
+    CatalogSelectComponent,
+  ],
   templateUrl: './transacciones-page.component.html',
   styleUrls: ['./transacciones-page.component.scss'],
 })
@@ -33,6 +47,12 @@ export class TransaccionesPage implements OnInit {
   protected readonly deleteModalOpen = signal(false);
   protected readonly transaccionToDelete = signal<Transaccion | null>(null);
   protected readonly editingTransaccionId = signal<number | null>(null);
+  protected readonly descripcionError = 'La descripción es obligatoria y debe tener al menos 3 caracteres.';
+  protected readonly presupuestoError = 'Selecciona un presupuesto.';
+  protected readonly rubroError = 'Selecciona el rubro de la transacción.';
+  protected readonly cuentaError = 'Selecciona la cuenta financiera de la transacción.';
+  protected readonly fechaError = 'Selecciona la fecha.';
+  protected readonly montoError = 'Ingresa un monto válido.';
 
   protected readonly form: FormGroup;
 
@@ -98,9 +118,8 @@ export class TransaccionesPage implements OnInit {
     this.resetForm();
   }
 
-  protected isInvalid(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+  protected getControl(controlName: string): FormControl {
+    return this.form.get(controlName) as FormControl;
   }
 
   protected onSubmit(): void {
@@ -232,6 +251,37 @@ export class TransaccionesPage implements OnInit {
       next: (response) => this.partidasPlanificadas.set(response.data ?? []),
       error: () => this.errorMessage.set('No se pudieron obtener las partidas planificadas.'),
     });
+  }
+
+  protected presupuestoOptions(): CatalogOption<number>[] {
+    return this.presupuestos().map((presupuesto) => ({
+      label: presupuesto.nombre,
+      value: presupuesto.id,
+    }));
+  }
+
+  protected rubroOptions(): CatalogOption<number>[] {
+    return this.rubros().map((rubro) => ({
+      label: `${rubro.nombre} (${rubro.naturaleza})`,
+      value: rubro.id,
+    }));
+  }
+
+  protected cuentaOptions(): CatalogOption<number>[] {
+    return this.cuentasFinancieras().map((cuenta) => ({
+      label: `${cuenta.nombre} - ${cuenta.divisa.codigo}`,
+      value: cuenta.id,
+    }));
+  }
+
+  protected partidaOptions(): CatalogOption<number | null>[] {
+    return [
+      { label: 'Sin partida planificada', value: null },
+      ...this.partidasPlanificadas().map((partida) => ({
+        label: partida.descripcion,
+        value: partida.id,
+      })),
+    ];
   }
 
   private applyQueryParams(params: Params): void {

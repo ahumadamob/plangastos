@@ -1,12 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { CrudCardComponent } from '../shared/crud-card/crud-card.component';
+import { ConfirmModalComponent } from '../shared/confirm-modal/confirm-modal.component';
+import { CatalogInputComponent } from '../shared/catalog-form/catalog-input.component';
+import { CatalogSelectComponent, CatalogOption } from '../shared/catalog-form/catalog-select.component';
 import { RubroService, NaturalezaMovimiento, Rubro, RubroRequestDto } from './rubro.service';
 
 @Component({
   selector: 'app-rubros-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    CrudCardComponent,
+    ConfirmModalComponent,
+    CatalogInputComponent,
+    CatalogSelectComponent,
+  ],
   templateUrl: './rubros-page.component.html',
   styleUrls: ['./rubros-page.component.scss'],
 })
@@ -20,6 +31,8 @@ export class RubrosPage implements OnInit {
   protected readonly displayForm = signal(false);
   protected readonly deleteModalOpen = signal(false);
   protected readonly rubroToDelete = signal<Rubro | null>(null);
+  protected readonly nombreError = 'El nombre es obligatorio y debe tener al menos 3 caracteres.';
+  protected readonly naturalezaError = 'Selecciona la naturaleza del rubro.';
 
   protected readonly form: FormGroup;
 
@@ -59,9 +72,8 @@ export class RubrosPage implements OnInit {
     });
   }
 
-  protected isInvalid(controlName: string): boolean {
-    const control = this.form.get(controlName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+  protected getControl(controlName: string): FormControl {
+    return this.form.get(controlName) as FormControl;
   }
 
   protected onSubmit(): void {
@@ -130,6 +142,13 @@ export class RubrosPage implements OnInit {
     this.statusMessage.set('');
     this.errorMessage.set('');
     this.loadRubros();
+  }
+
+  protected naturalezasOptions(): CatalogOption<number>[] {
+    return this.naturalezas().map((naturaleza) => ({
+      label: `${naturaleza.descripcion} (${naturaleza.codigo})`,
+      value: naturaleza.id,
+    }));
   }
 
   private loadRubros(): void {
